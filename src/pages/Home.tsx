@@ -5,8 +5,9 @@ import viteLogo from '/vite.svg'
 function Home() {
   const [count, setCount] = useState(0)
 
+  const API_URL = import.meta.env.VITE_API_URL;
   useEffect(() => {
-    fetch("/api/health")
+    fetch(`${API_URL}/api/health`)
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`)
