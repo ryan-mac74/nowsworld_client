@@ -3,7 +3,8 @@ import reactLogo from '/react.svg'
 import viteLogo from '/vite.svg'
 
 function Home() {
-  const [count, setCount] = useState(0)
+  const [count1, setCount1] = useState(0);
+  const [count2, setCount2] = useState(0);
 
   const API_URL = import.meta.env.VITE_API_URL;
   useEffect(() => {
@@ -20,19 +21,32 @@ function Home() {
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          Count = {count}
-        </button>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-8">
+        <div className="flex gap-4">
+          <a href="https://vite.dev" target="_blank">
+            <img src={viteLogo} className="logo" alt="Vite logo" />
+          </a>
+          
+          <a href="https://react.dev" target="_blank">
+            <img src={reactLogo} className="logo react" alt="React logo" />
+          </a>
+        </div>
+
+        <div className="flex gap-16">
+          <button
+            className="btn btn-color"
+            onClick={() => setCount1(count1 + 1)}
+          >
+            {count1}
+          </button>
+
+          <button
+            className="btn btn-color"
+            onClick={() => setCount2(count2 + 1)}
+          >
+            {count2}
+          </button>
+        </div>
       </div>
     </>
   )
