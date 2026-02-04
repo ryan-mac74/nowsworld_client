@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: system-ui, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -13,7 +13,7 @@
   }
 
   body {
-    @apply m-0 min-h-screen bg-gray-950 text-gray-50;
+    @apply m-0 min-h-screen bg-neutral-900 text-neutral-100;
   }
 
   h1 {
@@ -21,11 +21,11 @@
   }
 
   a {
-    @apply font-medium text-indigo-400 no-underline;
+    @apply font-medium text-indigo-500 no-underline;
   }
 
   a:hover {
-    @apply text-indigo-300;
+    @apply text-indigo-400;
   }
 }
 
