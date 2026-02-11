@@ -23,7 +23,6 @@
   a {
     @apply font-medium text-indigo-500 no-underline;
   }
-
   a:hover {
     @apply text-indigo-400;
   }

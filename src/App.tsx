@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
-import NotFound from './pages/NotFound'
-import Home from './pages/Home'
+import NotFound from './routes/NotFound'
+import Home from './routes/Home'
 
 export default function App() {
   return (

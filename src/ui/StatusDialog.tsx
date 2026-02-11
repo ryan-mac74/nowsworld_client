@@ -17,7 +17,7 @@ export default function StatusDialog({
     ),
     error: (
       <div className="h-10 w-10 rounded-full bg-red-500 flex items-center justify-center">
-        <span className="text-white text-xl font-bold">!</span>
+        <span className="text-white text-xl font-bold">x</span>
       </div>
     ),
     success: (
