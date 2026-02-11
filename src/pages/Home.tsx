@@ -66,38 +66,35 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen p-8 space-y-8">
+    <div className="min-h-screen p-8 flex flex-col items-center gap-8">
       {users.map((user) => (
         <div
           key={user.id}
-          className="border rounded-lg p-6 shadow-sm"
+          className="w-full max-w-2xl border border-neutral-700 rounded-lg p-6 shadow-md bg-neutral-800"
         >
           {/* User Info */}
-          <h2 className="text-2xl font-bold">{user.name}</h2>
-          <p className="text-gray-600">{user.email}</p>
+          <h2 className="text-2xl font-bold text-neutral-100">{user.name}</h2>
+          <p className="text-neutral-200">{user.email}</p>
 
           {/* Posts */}
           <div className="mt-4">
-            <h3 className="text-xl font-semibold mb-2">Posts</h3>
+            <h3 className="text-xl font-semibold mb-2 text-neutral-100">Posts</h3>
 
             {user.posts.length === 0 ? (
-              <p className="text-gray-400">No posts yet</p>
+              <p className="text-neutral-400">No posts yet</p>
             ) : (
               <ul className="space-y-3">
                 {user.posts.map((post) => (
-                  <li
-                    key={post.id}
-                    className="border rounded p-4"
-                  >
-                    <h4 className="font-semibold">{post.title}</h4>
-                    <p className="text-sm text-gray-600">
-                      {post.content}
-                    </p>
-                    {!post.published && (
-                      <span className="text-xs text-orange-600">
-                        Draft
-                      </span>
-                    )}
+                  <li key={post.id} className="border border-neutral-700 rounded p-4">
+                    <div className="flex items-center justify-center">
+                      <h4 className="font-semibold text-neutral-100">{post.title}</h4>
+                      {!post.published && (
+                        <span className="text-xs text-orange-200 bg-orange-800/30 px-1.5 py-0.5 rounded">
+                          Draft
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-neutral-200 text-sm mt-1">{post.content}</p>
                   </li>
                 ))}
               </ul>
