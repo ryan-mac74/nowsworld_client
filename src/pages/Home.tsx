@@ -1,55 +1,110 @@
-import { useState, useEffect } from 'react'
-import reactLogo from '/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from "react";
+import StatusDialog from "@/ui/StatusDialog";
 
-function Home() {
-  const [count1, setCount1] = useState(0);
-  const [count2, setCount2] = useState(0);
+type Post = {
+  id: number;
+  title: string;
+  content: string;
+  published: boolean;
+  authorId: number;
+};
+
+type User = {
+  id: number;
+  email: string;
+  name: string;
+  posts: Post[];
+};
+
+export default function Home() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
-    fetch(`${API_URL}/api/health`)
-      .then(res => {
+    async function fetchUsers() {
+      try {
+        const res = await fetch(`${API_URL}/api/users`);
         if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`)
+          throw new Error(`HTTP ${res.status}`);
         }
-        return res.json()
-      })
-      .then(data => console.log(data))
-      .catch(err => console.error("API error:", err))
-  }, [])
+        
+        const data: User[] = await res.json();
+        setUsers(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load users");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUsers();
+  }, [API_URL]);
+
+  if (loading) {
+    return (
+      <StatusDialog
+        type="loading"
+        title="Loading Users..."
+        message="Please, wait a moment"
+      />
+    );
+  }
+
+  if (error) {
+    return (
+      <StatusDialog
+        type="error"
+        title="Failed to load users"
+        message={error}
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
 
   return (
-    <>
-      <div className="min-h-screen flex flex-col items-center justify-center gap-8">
-        <div className="flex gap-4">
-          <a href="https://vite.dev" target="_blank">
-            <img src={viteLogo} className="logo" alt="Vite logo" />
-          </a>
-          
-          <a href="https://react.dev" target="_blank">
-            <img src={reactLogo} className="logo react" alt="React logo" />
-          </a>
-        </div>
+    <div className="min-h-screen p-8 space-y-8">
+      {users.map((user) => (
+        <div
+          key={user.id}
+          className="border rounded-lg p-6 shadow-sm"
+        >
+          {/* User Info */}
+          <h2 className="text-2xl font-bold">{user.name}</h2>
+          <p className="text-gray-600">{user.email}</p>
 
-        <div className="flex gap-16">
-          <button
-            className="btn btn-color"
-            onClick={() => setCount1(count1 + 1)}
-          >
-            {count1}
-          </button>
+          {/* Posts */}
+          <div className="mt-4">
+            <h3 className="text-xl font-semibold mb-2">Posts</h3>
 
-          <button
-            className="btn btn-color"
-            onClick={() => setCount2(count2 + 1)}
-          >
-            {count2}
-          </button>
+            {user.posts.length === 0 ? (
+              <p className="text-gray-400">No posts yet</p>
+            ) : (
+              <ul className="space-y-3">
+                {user.posts.map((post) => (
+                  <li
+                    key={post.id}
+                    className="border rounded p-4"
+                  >
+                    <h4 className="font-semibold">{post.title}</h4>
+                    <p className="text-sm text-gray-600">
+                      {post.content}
+                    </p>
+                    {!post.published && (
+                      <span className="text-xs text-orange-600">
+                        Draft
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
-      </div>
-    </>
-  )
+      ))}
+    </div>
+  );
 }
-
-export default Home
