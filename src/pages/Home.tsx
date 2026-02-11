@@ -48,7 +48,7 @@ export default function Home() {
     return (
       <StatusDialog
         type="loading"
-        title="Loading Users..."
+        title="Loading users..."
         message="Please, wait a moment"
       />
     );
@@ -58,7 +58,7 @@ export default function Home() {
     return (
       <StatusDialog
         type="error"
-        title="Failed to load users"
+        title="Error on loading users"
         message={error}
         onRetry={() => window.location.reload()}
       />
