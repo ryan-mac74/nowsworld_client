@@ -28,8 +28,6 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
-
-  const VITE_API_URL = import.meta.env.VITE_API_URL;
   
   const limitUser = 10;
   const limitPost = 5;
@@ -47,7 +45,7 @@ export default function Home() {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${VITE_API_URL}/api/users?page=${page}&limitUser=${limitUser}&limitPost=${limitPost}`);
+        const res = await fetch(`/api/users?page=${page}&limitUser=${limitUser}&limitPost=${limitPost}`);
         if (!res.ok) {
           throw new Error(`❌ HTTP ${res.status}`);
         }
@@ -80,7 +78,7 @@ export default function Home() {
     return () => {
       ignore = true;
     };
-  }, [page, VITE_API_URL]);
+  }, [page]);
 
   // Infinite scroll observer
   useEffect(() => {
