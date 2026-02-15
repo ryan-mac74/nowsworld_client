@@ -1,26 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import StatusDialog from "@/ui/StatusDialog";
-
-type Comment = {
-  id: number;
-  content: string;
-  userId: number;
-  createdAt: string;
-};
-
-type Like = {
-  id: number;
-  userId: number;
-};
 
 type Post = {
   id: number;
   content: string;
   published: boolean;
   createdAt: string;
-  userId: number;
-  comments: Comment[];
-  likes: Like[];
+  _count: {
+    likes: number;
+    comments: number;
+  };
 };
 
 type User = {
@@ -36,29 +25,88 @@ export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
+  
+  const limitUser = 10;
+  const limitPost = 5;
 
+  // Fetch users for a page
   useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const res = await fetch(`${API_URL}/api/users`);
-        if (!res.ok) throw new Error(`❌ HTTP ${res.status}`);
-
-        const data: User[] = await res.json();
-        setUsers(data);
-      } catch (err) {
-        console.error(err);
-        setError("❌ Failed to load users");
-      } finally {
-        setLoading(false);
-      }
+    if (!hasMore) {
+      return;
     }
 
-    fetchUsers();
-  }, [API_URL]);
+    // Prevent state updates on unmounted component
+    // by React Strict Mode
+    let ignore = false;
 
-  if (loading) {
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${VITE_API_URL}/api/users?page=${page}&limitUser=${limitUser}&limitPost=${limitPost}`);
+        if (!res.ok) {
+          throw new Error(`❌ HTTP ${res.status}`);
+        }
+
+        const data: User[] = await res.json();
+
+        if (!ignore) {
+          // Append new users to the list
+          setUsers(prev => [...prev, ...data]);
+
+          if (data.length < limitUser) {
+            // No more users to load
+            setHasMore(false);
+          }
+        }
+      } catch (err) {
+        if (!ignore) {
+          console.error(err);
+          setError("❌ Failed to load users");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchUsers();
+
+    return () => {
+      ignore = true;
+    };
+  }, [page, VITE_API_URL]);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    // Exit if no loader or no more users to fetch
+    if (!loaderRef.current || !hasMore) {
+      return;
+    }
+
+    // Callback whenever the loader is visible
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          setPage(page => page + 1);
+        }
+      },
+      // Trigger callback before visibility
+      { rootMargin: "200px" }
+    );
+
+    // Start observing the loader element
+    observer.observe(loaderRef.current);
+    
+    return () => observer.disconnect();
+  }, [loaderRef, hasMore, loading]);
+
+  if (loading && page === 1) {
     return (
       <StatusDialog
         type="loading"
@@ -98,7 +146,7 @@ export default function Home() {
             <p className="text-neutral-200 mt-2 italic">{user.bio}</p>
           )}
 
-          {/* Post List */}
+          {/* User Posts */}
           <div className="mt-6">
             {user.posts.length === 0 ? (
               <p className="text-neutral-400">No posts yet</p>
@@ -128,8 +176,8 @@ export default function Home() {
                     {/*
                     
                     <div className="flex gap-4 mt-3 text-sm text-neutral-400">
-                      <span>❤️ {post.likes.length}</span>
-                      <span>💬 {post.comments.length}</span>
+                      <span>❤️ {post._count.likes}</span>
+                      <span>💬 {post._count.comments}</span>
                     </div>
                     
                     */}
@@ -140,6 +188,16 @@ export default function Home() {
           </div>
         </div>
       ))}
+
+      {hasMore && (
+        <div ref={loaderRef} className="h-8 w-full flex justify-center items-center">
+          <span className="text-neutral-400">Loading more users...</span>
+        </div>
+      )}
+
+      {!hasMore && users.length > 0 && (
+        <p className="text-neutral-400 text-center mt-4">No more users to load</p>
+      )}
     </div>
   );
 }
