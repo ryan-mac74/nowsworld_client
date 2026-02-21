@@ -1,8 +1,9 @@
 # 🌎 NowSWorld
 
-A Public Platform to write down all your thoughts, ideas or just what’s on your mind at the moment, depending on
-your mood; with the possibility to set up a to-do list or you can just take a quick note.
-You also have the option of posting news about what’s happening in the world from where you are.
+A New Social Media Platform to write down all your thoughts, ideas or just what’s on your mind at the moment, depending on
+your mood ... with the possibility to take a quick note or just post news about what’s happening in the world from where you are.  
+It's designed to redefine how people communicate and make new connection through unique features and a modern UI.  
+The goal is to make something different from existing platforms.
 
 ## 🛠️ Tech Stack
 
