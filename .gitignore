@@ -1,7 +1,8 @@
-node_modules
-dist
-dist-ssr
+# Local files
 *.local
+
+# Node modules
+node_modules/
 
 # Build output
 dist/
@@ -12,10 +13,12 @@ dist-ssr/
 
 # Environment variables
 .env
-.env.local
-.env.development
-.env.test.local
-.env.production
+.env.*
+.env.test.*
+.env.local.*
+.env.development.*
+.env.production.*
+.env.staging.*
 
 # Logs
 logs
@@ -50,3 +53,6 @@ coverage/
 tmp/
 temp/
 uploads/
+
+# Prisma output
+generated/

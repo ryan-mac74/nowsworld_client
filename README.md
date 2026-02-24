@@ -1,6 +1,6 @@
 # 🌎 NowSWorld
 
-A New Social Media Platform to write down all your thoughts, ideas or just what’s on your mind at the moment, depending on
+A new Social Media Platform to write down all your thoughts, ideas or just what’s on your mind at the moment, depending on
 your mood ... with the possibility to take a quick note or just post news about what’s happening in the world from where you are.  
 It's designed to redefine how people communicate and make new connection through unique features and a modern UI.  
 The goal is to make something different from existing platforms.
@@ -11,6 +11,10 @@ The goal is to make something different from existing platforms.
 - [Vite](https://vitejs.dev/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
+- [Express](https://expressjs.com/)
+- [Node.js](https://nodejs.org/)
+- [Prisma](https://www.prisma.io/)
+- [PostgreSQL](https://www.postgresql.org/)
 
 ## 🪄 Getting Started
 
