@@ -13,7 +13,7 @@
   }
 
   body {
-    @apply m-0 min-h-screen bg-neutral-900 text-neutral-100;
+    @apply m-0 min-h-screen bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100;
   }
 
   h1 {

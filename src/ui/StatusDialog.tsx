@@ -13,7 +13,7 @@ export default function StatusDialog({
 }: StatusDialogProps) {
   const iconData = {
     loading: (
-      <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-600 border-t-blue-500" />
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-neutral-200 dark:border-neutral-600 border-t-blue-600 dark:border-t-blue-400" />
     ),
     error: (
       <div className="h-10 w-10 rounded-full bg-red-500 flex items-center justify-center">
@@ -33,10 +33,10 @@ export default function StatusDialog({
   };
 
   const titleColor = {
-    loading: "text-blue-500",
-    error: "text-red-500",
-    success: "text-green-500",
-    warning: "text-yellow-500",
+    loading: "text-blue-600 dark:text-blue-400",
+    error: "text-red-600 dark:text-red-400",
+    success: "text-green-600 dark:text-green-400",
+    warning: "text-yellow-600 dark:text-yellow-400",
   };
 
   const isError = type === "error";
@@ -44,8 +44,8 @@ export default function StatusDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div
-        className={`w-full max-w-sm rounded-lg bg-neutral-900 p-6 shadow-lg border ${
-          isError ? "border-red-500" : "border-neutral-700"
+        className={`w-full max-w-sm rounded-lg bg-white dark:bg-neutral-900 p-6 shadow-lg border ${
+          isError ? "border-red-500" : "border-neutral-200 dark:border-neutral-700"
         }`}
       >
         <div className="flex flex-col items-center gap-4 text-center">
@@ -59,7 +59,7 @@ export default function StatusDialog({
 
           {/* Message */}
           {message && 
-            <p className="text-sm text-neutral-200">
+            <p className="text-sm text-neutral-600 dark:text-neutral-200">
               {message}
             </p>
           }
