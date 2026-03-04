@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import StatusDialog from "@/ui/StatusDialog";
 import ThemeToggle from "@/ui/ThemeToggle";
+import StatusDialog from "@/ui/Dialogs/StatusDialog";
+import LoginDialog from "@/ui/Dialogs/LoginDialog";
 
 type Post = {
   id: number;
@@ -107,8 +108,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen p-8 flex flex-col items-center gap-8 bg-white dark:bg-neutral-900">
-      <div className="w-full max-w-2xl flex justify-end">
+      <div className="w-full max-w-2xl flex justify-end items-center gap-4">
         <ThemeToggle />
+        <LoginDialog />
       </div>
 
       {loading && page === 1 ? (

@@ -48,6 +48,13 @@ npm run build
 npm run start
 ```
 
+## ❤️ Acknowledgement
+
+This project is based on and inspired by the following open-source repository:
+
+- **[full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template)**
+    by *[Sebastián Ramírez](https://github.com/tiangolo)*
+
 ## 📝 License
 
 This project is under this [MIT License](LICENSE).
