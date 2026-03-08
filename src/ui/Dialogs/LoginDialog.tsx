@@ -1,36 +1,47 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
-import { LogIn, X } from "lucide-react";
+import { LinkIcon, LogIn, X } from "lucide-react";
 import Button from "@/ui/Button";
 
-export default function LoginDialog() {
-  const API_URL = import.meta.env.VITE_API_URL;
+type LoginDialogProps = {
+  user?: any;
+  className?: string;
+};
+
+export default function LoginDialog({ user, className }: LoginDialogProps) {
+  const VITE_API_URL = import.meta.env.VITE_API_URL || '';
 
   const handleGoogleLogin = () => {
-    window.location.href = `${API_URL}/api/auth/google`;
+    window.location.href = `${VITE_API_URL}/auth/google`;
+  }
+  const handleFacebookLogin = () => {
+    window.location.href = `${VITE_API_URL}/auth/facebook`;
   }
 
-  const handleFacebookLogin = () => {
-    window.location.href = `${API_URL}/api/auth/facebook`;
-  }
+  const isLoggedIn = !!user;
 
   return (
     <Dialog.Root>
       {/* Trigger Button */}
       <Dialog.Trigger asChild>
-        <Button
-          className="
-            border border-neutral-300 dark:border-neutral-700
-            bg-white dark:bg-neutral-800
-            text-neutral-900 dark:text-neutral-100
-            hover:bg-neutral-100 dark:hover:bg-neutral-700
-            flex items-center gap-2
-          "
-        >
-          <LogIn className="size-4" />
-          Log In
-        </Button>
+        {isLoggedIn ? (
+          <Button className={className}>
+            <LinkIcon className="size-4" />
+            Link Account
+          </Button>
+        ) : (
+          <Button
+            className="
+              border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800
+              text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700
+              flex items-center gap-2
+            "
+          >
+            <LogIn className="size-4" />
+            Log In
+          </Button>
+        )}
       </Dialog.Trigger>
 
       {/* Overlay */}
@@ -49,13 +60,27 @@ export default function LoginDialog() {
         >
           {/* Close Button */}
           <Dialog.Close asChild>
-            <button className="absolute right-4 top-4 text-muted-foreground hover:text-foreground">
+            <button className="absolute left-4 top-4 text-muted-foreground hover:text-foreground">
               <X className="text-red-800 size-8" />
             </button>
           </Dialog.Close>
 
           <div className="text-center">
-            <h2 className="text-xl font-bold">Log in to your account</h2>
+            <Dialog.Title className="text-xl font-bold">
+              {isLoggedIn ? (
+                "Link a new account"
+              ) : (
+                "Log in to your account"
+              )}
+            </Dialog.Title>
+
+            <Dialog.Description className="text-base text-neutral-800 dark:text-neutral-200 mt-1">
+              {isLoggedIn ? (
+                "Choose any provider first then link the other one later"
+              ) : (
+                "Connect another provider to your account"
+              )}
+            </Dialog.Description>
           </div>
 
           <div className="grid gap-4">
@@ -79,6 +104,6 @@ export default function LoginDialog() {
           </div>
         </Dialog.Content>
       </Dialog.Portal>
-    </Dialog.Root>
-  )
+    </Dialog.Root >
+  );
 }
