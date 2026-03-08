@@ -117,16 +117,17 @@ export default function Home() {
 
   // Infinite scroll observer
   useEffect(() => {
-    // Exit if no loader or no more users to fetch
-    if (!loaderRef.current || !hasMore) {
+    // Exit if no loader or no more users to fetch or already loading
+    if (!loaderRef.current || !hasMore || loading) {
       return;
     }
 
     // Callback whenever the loader is visible
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !loading) {
-          setPage(page => page + 1);
+      (entries, obs) => {
+        if (entries[0].isIntersecting) {
+          obs.unobserve(entries[0].target);
+          setPage((prev) => prev + 1);
         }
       },
       // Trigger callback before visibility
