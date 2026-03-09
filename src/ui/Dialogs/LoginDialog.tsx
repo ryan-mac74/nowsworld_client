@@ -78,7 +78,7 @@ export default function LoginDialog({ user, className }: LoginDialogProps) {
               {isLoggedIn ? (
                 "Connect another provider to your account"
               ) : (
-                "Choose any provider first then link another account later"
+                "Choose any provider first, link another account later"
               )}
             </Dialog.Description>
           </div>

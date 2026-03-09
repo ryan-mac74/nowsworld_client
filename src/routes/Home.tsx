@@ -141,19 +141,19 @@ export default function Home() {
   }, [loaderRef, hasMore, loading]);
 
   return (
-    <div className="min-h-screen p-8 flex flex-col items-center gap-8 bg-white dark:bg-neutral-900">
+    <div className="min-h-screen flex flex-col items-center gap-4 bg-white dark:bg-neutral-900">
       <div className="w-full max-w-2xl flex items-center justify-between">
         <ThemeToggle />
 
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="w-10 h-10 flex items-center justify-center font-bold rounded-full bg-neutral-900 dark:bg-white text-neutral-100 dark:text-neutral-900 shrink-0 p-0.5">
+              <div className="w-10 h-10 flex items-center justify-center font-bold rounded-full bg-neutral-900 dark:bg-white text-neutral-100 dark:text-neutral-900 text-base shrink-0 p-0.5">
                 {user.avatar ? (
                   <img
                     src={user.avatar}
                     alt={getInitials(user.name)}
-                    className="w-full h-full rounded-full object-cover"
+                    className="w-full h-full rounded-full object-cover text-base"
                   />
                 ) : (
                   <span className="text-base">{getInitials(user.name)}</span>
@@ -234,7 +234,7 @@ export default function Home() {
                     <img
                       src={user.avatar}
                       alt={getInitials(user.name)}
-                      className="w-full h-full rounded-full object-cover"
+                      className="w-full h-full rounded-full object-cover text-base"
                     />
                   ) : (
                     <span className="text-base">{getInitials(user.name)}</span>
