@@ -1,8 +1,8 @@
 import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { LogOut, X } from "lucide-react";
-import Button from "@/ui/Button";
-import MenuIcon from "@/ui/MenuIcon";
+import Button from "@/components/ui/Button";
+import MenuIcon from "@/components/ui/MenuIcon";
 
 type LogoutDialogProps = {
   className?: string;

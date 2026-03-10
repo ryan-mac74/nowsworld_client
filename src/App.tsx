@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import "@/App.css";
 import NotFound from "@/routes/NotFound";
 import Home from "@/routes/Home";
-import Login from "@/ui/Dialogs/LoginDialog";
+import Login from "@/components/dialogs/LoginDialog";
 import { Toaster } from "sonner";
 
 export default function App() {

@@ -1,20 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import ThemeToggle from "@/ui/ThemeToggle";
-import StatusDialog from "@/ui/Dialogs/StatusDialog";
-import LoginDialog from "@/ui/Dialogs/LoginDialog";
-import LogoutDialog from "@/ui/Dialogs/LogoutDialog";
+import StatusDialog from "@/components/dialogs/StatusDialog";
 import getInitials from "@/utils/getInitials";
 import useAuth from "@/hooks/useAuth";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/ui/Dropdown-menu";
-import Button from "@/ui/Button";
-import MenuIcon from "@/ui/MenuIcon";
-import { FiUser, FiSettings } from "react-icons/fi";
+import AppHeader from "@/components/layout/AppHeader";
 
 type Post = {
   id: number;
@@ -48,24 +36,13 @@ export default function Home() {
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
-  const menuItems = [
-    { label: "Profile", path: "/profile", icon: FiUser },
-    { label: "Settings", path: "/settings", icon: FiSettings },
-  ];
+  const VITE_API_URL =
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:3000/api";
 
-  const menuItemClass = `
-    w-full h-8 flex items-center justify-center
-    bg-neutral-100 dark:bg-neutral-800
-    hover:bg-neutral-200 dark:hover:bg-neutral-700
-    gap-2 cursor-pointer
-  `;
-
-  const VITE_API_URL = import.meta.env.VITE_API_URL || '';
-
-  const limitUser = 10;
-  const limitPost = 5;
+  const userLimit = 10;
+  const postLimit = 5;
 
   // Fetch users for a page
   useEffect(() => {
@@ -80,7 +57,7 @@ export default function Home() {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${VITE_API_URL}/users?page=${page}&limitUser=${limitUser}&limitPost=${limitPost}`);
+        const res = await fetch(`${VITE_API_URL}/users?page=${page}&userLimit=${userLimit}&postLimit=${postLimit}`);
         if (!res.ok) {
           throw new Error(`❌ HTTP ${res.status}`);
         }
@@ -91,7 +68,7 @@ export default function Home() {
           // Append new users to the list
           setUsers(prev => [...prev, ...data]);
 
-          if (data.length < limitUser) {
+          if (data.length < userLimit) {
             // No more users to load
             setHasMore(false);
           }
@@ -142,70 +119,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center gap-4 bg-white dark:bg-neutral-900">
-      <div className="w-full max-w-2xl flex items-center justify-between">
-        <ThemeToggle />
-
-        {user ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="w-10 h-10 flex items-center justify-center font-bold rounded-full bg-neutral-900 dark:bg-white text-neutral-100 dark:text-neutral-900 text-base shrink-0 p-0.5">
-                {user.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={getInitials(user.name)}
-                    className="w-full h-full rounded-full object-cover text-base"
-                  />
-                ) : (
-                  <span className="text-base">{getInitials(user.name)}</span>
-                )}
-              </div>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              align="end"
-              className="
-              bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700
-                flex gap-1 flex-col
-              "
-            >
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <DropdownMenuItem key={item.path} asChild>
-                    <Button
-                      className={menuItemClass}
-                      onClick={() => navigate(item.path)}
-                    >
-                      <MenuIcon Icon={Icon} />
-                      {item.label}
-                    </Button>
-                  </DropdownMenuItem>
-                );
-              })}
-
-              <DropdownMenuItem asChild>
-                <LoginDialog
-                  user={user}
-                  className={menuItemClass}
-                />
-              </DropdownMenuItem>
-
-              <DropdownMenuItem asChild>
-                <LogoutDialog
-                  className={menuItemClass}
-                  onLogout={() => logout()}
-                />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <LoginDialog
-            user={user}
-            className={menuItemClass}
-          />
-        )}
-      </div>
+      <AppHeader
+        user={user}
+        logout={() => logout()}
+      />
 
       {loading && page === 1 ? (
         <StatusDialog

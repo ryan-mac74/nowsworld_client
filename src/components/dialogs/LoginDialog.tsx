@@ -2,7 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 import { LinkIcon, LogIn, X } from "lucide-react";
-import Button from "@/ui/Button";
+import Button from "@/components/ui/Button";
 
 type LoginDialogProps = {
   user?: any;
