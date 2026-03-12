@@ -35,7 +35,7 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
-  const { user, logout } = useAuth();
+  const { user, logout, deactivateAccount, activateAccount } = useAuth();
 
   const VITE_API_URL =
     import.meta.env.VITE_API_URL ||
@@ -57,7 +57,10 @@ export default function Home() {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${VITE_API_URL}/users?page=${page}&userLimit=${userLimit}&postLimit=${postLimit}`);
+        const res = await fetch(`${VITE_API_URL}/users?page=${page}&userLimit=${userLimit}&postLimit=${postLimit}`, {
+          credentials: "include",
+        });
+
         if (!res.ok) {
           throw new Error(`❌ HTTP ${res.status}`);
         }
@@ -122,6 +125,8 @@ export default function Home() {
       <AppHeader
         user={user}
         logout={() => logout()}
+        deactivateAccount={() => deactivateAccount()}
+        activateAccount={() => activateAccount()}
       />
 
       {loading && page === 1 ? (

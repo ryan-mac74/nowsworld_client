@@ -3,9 +3,11 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 import { LinkIcon, LogIn, X } from "lucide-react";
 import Button from "@/components/ui/Button";
+import MenuIcon from "@/components/ui/MenuIcon";
+import type { UserPublic } from "@/hooks/useAuth";
 
 type LoginDialogProps = {
-  user?: any;
+  user?: UserPublic | null;
   className?: string;
 };
 
@@ -19,36 +21,41 @@ export default function LoginDialog({ user, className }: LoginDialogProps) {
     window.location.href = `${VITE_API_URL}/auth/facebook`;
   }
 
+  const loginButtonClass = `
+    border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800
+    text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700
+    flex items-center gap-2
+  `;
+
   const isLoggedIn = !!user;
+  const actionIcon = isLoggedIn ? LinkIcon : LogIn;
+  const triggerClass = isLoggedIn ? className : loginButtonClass;
+
+  const actionLabel = isLoggedIn
+    ? "Link Account"
+    : "Log In";
+
+  const actionTitle = isLoggedIn
+    ? "Link a new account"
+    : "Log in to your account";
+
+  const description = isLoggedIn
+    ? "Connect another provider to your account"
+    : "Choose any provider first, link another account later";
+
 
   return (
     <Dialog.Root>
-      {/* Trigger Button */}
       <Dialog.Trigger asChild>
-        {isLoggedIn ? (
-          <Button className={className}>
-            <LinkIcon className="size-4" />
-            Link Account
-          </Button>
-        ) : (
-          <Button
-            className="
-              border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800
-              text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700
-              flex items-center gap-2
-            "
-          >
-            <LogIn className="size-4" />
-            Log In
-          </Button>
-        )}
+        <Button className={triggerClass}>
+          <MenuIcon Icon={actionIcon} />
+          {actionLabel}
+        </Button>
       </Dialog.Trigger>
 
-      {/* Overlay */}
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
 
-        {/* Content */}
         <Dialog.Content
           className="
             fixed left-1/2 top-1/2 w-[90%] max-w-md
@@ -58,28 +65,19 @@ export default function LoginDialog({ user, className }: LoginDialogProps) {
             flex flex-col gap-6
           "
         >
-          {/* Close Button */}
           <Dialog.Close asChild>
-            <button className="absolute left-4 top-4 text-muted-foreground hover:text-foreground">
+            <Button className="absolute left-2 top-2 text-muted-foreground hover:text-foreground">
               <X className="text-red-800 size-8" />
-            </button>
+            </Button>
           </Dialog.Close>
 
           <div className="text-center">
             <Dialog.Title className="text-xl font-bold">
-              {isLoggedIn ? (
-                "Link a new account"
-              ) : (
-                "Log in to your account"
-              )}
+              {actionTitle}
             </Dialog.Title>
 
             <Dialog.Description className="text-base text-neutral-800 dark:text-neutral-200 mt-1">
-              {isLoggedIn ? (
-                "Connect another provider to your account"
-              ) : (
-                "Choose any provider first, link another account later"
-              )}
+              {description}
             </Dialog.Description>
           </div>
 

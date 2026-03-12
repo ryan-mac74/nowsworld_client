@@ -15,17 +15,21 @@ const menuItemClass = `
 export type UserMenuProps = {
     user: UserPublic | null;
     logout: () => void;
+    deactivateAccount: () => void;
+    activateAccount: () => void;
 };
 
 export default function AppHeader({
     user,
     logout,
+    deactivateAccount,
+    activateAccount,
 }: UserMenuProps) {
     return (
         <div
             className="
                 w-full max-w-2xl
-                sticky top-0 z-50
+                sticky top-0 z-10
                 bg-white dark:bg-neutral-900
                 border-b border-neutral-200 dark:border-neutral-800
             "
@@ -47,6 +51,8 @@ export default function AppHeader({
                     <UserMenu
                         user={user}
                         logout={() => logout()}
+                        deactivateAccount={() => deactivateAccount()}
+                        activateAccount={() => activateAccount()}
                         className={menuItemClass}
                     />
                 ) : (

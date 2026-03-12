@@ -1,38 +1,45 @@
 import { useNavigate } from "react-router-dom";
 import LoginDialog from "@/components/dialogs/LoginDialog";
 import LogoutDialog from "@/components/dialogs/LogoutDialog";
+import ActivationDialog from "@/components/dialogs/ActivationDialog";
 import getInitials from "@/utils/getInitials";
 import {
     DropdownMenu,
     DropdownMenuTrigger,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
 } from "@/components/ui/Dropdown-menu";
 import Button from "@/components/ui/Button";
 import MenuIcon from "@/components/ui/MenuIcon";
 import type { UserPublic } from "@/hooks/useAuth";
-import { FiUser, FiSettings } from "react-icons/fi";
+import { User, Settings } from "lucide-react";
 
 const menuItems = [
-    { label: "Profile", path: "/profile", icon: FiUser },
-    { label: "Settings", path: "/settings", icon: FiSettings },
+    { label: "Profile", path: "/profile", icon: User },
+    { label: "Settings", path: "/settings", icon: Settings },
 ];
 
 export type MenuItem = {
     label: string;
     path: string;
     icon: React.ElementType;
+    variant?: "default" | "destructive" | "success" | "info";
 };
 
-export type UserMenuProps = {
+type UserMenuProps = {
     user: UserPublic;
     logout: () => void;
+    deactivateAccount: () => void;
+    activateAccount: () => void;
     className?: string;
 };
 
 export default function UserMenu({
     user,
     logout,
+    deactivateAccount,
+    activateAccount,
     className,
 }: UserMenuProps) {
     const navigate = useNavigate();
@@ -84,17 +91,39 @@ export default function UserMenu({
                     );
                 })}
 
-                <DropdownMenuItem asChild>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                    variant="info"
+                    asChild
+                >
                     <LoginDialog
                         user={user}
                         className={className}
                     />
                 </DropdownMenuItem>
 
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem
+                    variant="info"
+                    asChild
+                >
                     <LogoutDialog
                         className={className}
                         onLogout={() => logout()}
+                    />
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                    variant={user.is_active ? "destructive" : "success"}
+                    asChild
+                >
+                    <ActivationDialog
+                        className={className}
+                        isActive={user.is_active}
+                        onDeactivate={() => deactivateAccount()}
+                        onActivate={() => activateAccount()}
                     />
                 </DropdownMenuItem>
             </DropdownMenuContent>

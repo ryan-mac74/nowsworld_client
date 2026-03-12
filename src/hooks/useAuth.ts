@@ -32,6 +32,9 @@ export default function useAuth() {
   const VITE_API_URL = import.meta.env.VITE_API_URL || '';
 
   const fetchUser = useCallback(async () => {
+    if (!isLoading) {
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -58,7 +61,7 @@ export default function useAuth() {
     fetchUser();
   }, [fetchUser]);
 
-  const logout = async () => {
+  const logout = async (toast: boolean = true) => {
     try {
       const res = await fetch(`${VITE_API_URL}/auth/logout`, {
         method: "POST",
@@ -66,12 +69,63 @@ export default function useAuth() {
       });
 
       if (!res.ok) {
-        throw new Error("❌ Logout failed");
+        throw new Error("❌ Failed to log out");
       }
 
       setUser(null);
       navigate("/");
-      showSuccessToast("You have been logged out");
+
+      if (toast) {
+        showSuccessToast("You have been logged out");
+      }
+    } catch (error: unknown) {
+      console.error(error);
+      showErrorToast("Something went wrong");
+    }
+  };
+
+  const deactivateAccount = async () => {
+    if (!user) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${VITE_API_URL}/auth/deactivate`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        throw new Error("❌ Failed to deactivate account");
+      }
+
+      setUser((prev) => prev ? { ...prev, is_active: false } : null);
+      logout(false);
+
+      showSuccessToast("Your account has been deactivated");
+    } catch (error: unknown) {
+      console.error(error);
+      showErrorToast("Something went wrong");
+    }
+  };
+
+  const activateAccount = async () => {
+    if (!user) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${VITE_API_URL}/auth/activate`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        throw new Error("❌ Failed to reactivate account");
+      }
+
+      setUser((prev) => prev ? { ...prev, is_active: true } : null);
+      navigate("/");
+
+      showSuccessToast("Your account has been reactivated");
     } catch (error: unknown) {
       console.error(error);
       showErrorToast("Something went wrong");
@@ -83,5 +137,7 @@ export default function useAuth() {
     isLoading,
     logout,
     refetchUser: fetchUser,
+    deactivateAccount,
+    activateAccount,
   };
 }
