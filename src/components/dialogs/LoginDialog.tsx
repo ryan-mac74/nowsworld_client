@@ -12,7 +12,9 @@ type LoginDialogProps = {
 };
 
 export default function LoginDialog({ user, className }: LoginDialogProps) {
-  const VITE_API_URL = import.meta.env.VITE_API_URL || '';
+  const VITE_API_URL =
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:3000/api";
 
   const handleGoogleLogin = () => {
     window.location.href = `${VITE_API_URL}/auth/google`;

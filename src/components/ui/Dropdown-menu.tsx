@@ -54,7 +54,7 @@ function DropdownMenuItem({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
   inset?: boolean
-  variant?: "default" | "destructive" | "success" | "info"
+  variant?: "default" | "destructive" | "success" | "info" | "warning"
 }) {
   return (
     <DropdownMenuPrimitive.Item
@@ -63,12 +63,19 @@ function DropdownMenuItem({
       data-variant={variant}
       className={cn(
         "relative flex items-center gap-2 cursor-default select-none rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:shrink-0 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
+
         variant === "destructive" &&
         "text-red-600 focus:bg-red-100 dark:focus:bg-red-800/20",
+
         variant === "success" &&
         "text-green-600 focus:bg-green-100 dark:focus:bg-green-800/20",
+
         variant === "info" &&
         "text-blue-600 focus:bg-blue-100 dark:focus:bg-blue-800/20",
+
+        variant === "warning" &&
+        "text-yellow-600 focus:bg-yellow-100 dark:focus:bg-yellow-800/20",
+
         className
       )}
       {...props}

@@ -104,7 +104,7 @@ export default function UserMenu({
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
-                    variant="info"
+                    variant="warning"
                     asChild
                 >
                     <LogoutDialog

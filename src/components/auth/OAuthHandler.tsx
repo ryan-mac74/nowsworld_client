@@ -27,11 +27,24 @@ export default function OAuthHandler() {
             showSuccessToast("Your accounts are now linked");
         }
 
+        if (auth === "link-error") {
+            showErrorToast("Account already linked to another user");
+        }
+
+        if (auth === "provider-success") {
+            showSuccessToast("Your account is already linked to this user");
+        }
+
+        if (auth === "provider-error") {
+            showErrorToast("You can't link accounts from the same provider");
+        }
+
         if (auth === "error") {
             showErrorToast("Authentication failed");
         }
 
-        setSearchParams({});
+        // Remove query params after reading
+        setSearchParams(new URLSearchParams());
     }, [searchParams, setSearchParams, showSuccessToast, showErrorToast]);
 
     return null;

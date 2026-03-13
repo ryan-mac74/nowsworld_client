@@ -29,7 +29,9 @@ export default function useAuth() {
   const [user, setUser] = useState<UserPublic | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const VITE_API_URL = import.meta.env.VITE_API_URL || '';
+  const VITE_API_URL =
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:3000/api";
 
   const fetchUser = useCallback(async () => {
     if (!isLoading) {
@@ -99,7 +101,7 @@ export default function useAuth() {
       }
 
       setUser((prev) => prev ? { ...prev, is_active: false } : null);
-      logout(false);
+      await logout(false);
 
       showSuccessToast("Your account has been deactivated");
     } catch (error: unknown) {

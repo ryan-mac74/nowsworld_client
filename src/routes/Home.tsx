@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import StatusDialog from "@/components/dialogs/StatusDialog";
-import getInitials from "@/utils/getInitials";
 import useAuth from "@/hooks/useAuth";
+import getInitials from "@/utils/getInitials";
+import StatusDialog from "@/components/dialogs/StatusDialog";
 import AppHeader from "@/components/layout/AppHeader";
 
 type Post = {

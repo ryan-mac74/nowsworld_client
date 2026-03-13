@@ -3,7 +3,9 @@ import LoginDialog from "@/components/dialogs/LoginDialog";
 import UserMenu from "@/components/navigation/UserMenu";
 import type { UserPublic } from "@/hooks/useAuth";
 
-const VITE_PROJECT_NAME = import.meta.env.VITE_PROJECT_NAME || '';
+const VITE_PROJECT_NAME =
+    import.meta.env.VITE_PROJECT_NAME ||
+    "NowSWorld";
 
 const menuItemClass = `
     w-full h-8 flex items-center justify-center
