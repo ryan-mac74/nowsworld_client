@@ -5,6 +5,7 @@ import { LinkIcon, LogIn, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import MenuIcon from "@/components/ui/MenuIcon";
 import type { UserPublic } from "@/hooks/useAuth";
+import { headerButtonClass } from "@/components/layout/AppHeader";
 
 type LoginDialogProps = {
   user?: UserPublic | null;
@@ -24,9 +25,12 @@ export default function LoginDialog({ user, className }: LoginDialogProps) {
   }
 
   const loginButtonClass = `
-    border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800
-    text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700
-    flex items-center gap-2
+    ${headerButtonClass}
+    !bg-blue-600
+    !text-white
+    !text-sm
+    !sm:text-base
+    mr-0.5
   `;
 
   const isLoggedIn = !!user;

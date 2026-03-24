@@ -109,7 +109,9 @@ export default function UserMenu({
                 >
                     <LogoutDialog
                         className={className}
-                        onLogout={() => logout()}
+                        onLogout={async () => {
+                            await logout();
+                        }}
                     />
                 </DropdownMenuItem>
 
@@ -122,8 +124,12 @@ export default function UserMenu({
                     <ActivationDialog
                         className={className}
                         isActive={user.is_active}
-                        onDeactivate={() => deactivateAccount()}
-                        onActivate={() => activateAccount()}
+                        onDeactivate={async () => {
+                            await deactivateAccount();
+                        }}
+                        onActivate={async () => {
+                            await activateAccount();
+                        }}
                     />
                 </DropdownMenuItem>
             </DropdownMenuContent>

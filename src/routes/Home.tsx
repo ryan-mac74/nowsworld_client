@@ -61,11 +61,16 @@ export default function Home() {
     setError(null);
 
     try {
+      // Refetch 1st page of users
       const data = await fetchUsersRequest(1);
 
       setUsers(data);
       setPage(1);
-      setHasMore(data.length >= userLimit);
+
+      if (data.length < userLimit) {
+        // No more users to load
+        setHasMore(false);
+      }
     } catch (err) {
       console.error(err);
       setError("❌ Failed to refresh users");
