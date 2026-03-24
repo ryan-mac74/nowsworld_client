@@ -44,6 +44,36 @@ export default function Home() {
   const userLimit = 10;
   const postLimit = 5;
 
+  const fetchUsersRequest = async (pageToFetch: number) => {
+    const res = await fetch(`${VITE_API_URL}/users?page=${pageToFetch}&userLimit=${userLimit}&postLimit=${postLimit}`, {
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error(`❌ HTTP ${res.status}`);
+    }
+
+    return res.json() as Promise<User[]>;
+  };
+
+  const refetchUsers = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await fetchUsersRequest(1);
+
+      setUsers(data);
+      setPage(1);
+      setHasMore(data.length >= userLimit);
+    } catch (err) {
+      console.error(err);
+      setError("❌ Failed to refresh users");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch users for a page
   useEffect(() => {
     if (!hasMore) {
@@ -56,16 +86,9 @@ export default function Home() {
 
     const fetchUsers = async () => {
       setLoading(true);
+
       try {
-        const res = await fetch(`${VITE_API_URL}/users?page=${page}&userLimit=${userLimit}&postLimit=${postLimit}`, {
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          throw new Error(`❌ HTTP ${res.status}`);
-        }
-
-        const data: User[] = await res.json();
+        const data = await fetchUsersRequest(page);
 
         if (!ignore) {
           // Append new users to the list
@@ -124,9 +147,15 @@ export default function Home() {
     <div className="min-h-screen flex flex-col items-center gap-4 bg-white dark:bg-neutral-900">
       <AppHeader
         user={user}
-        logout={() => logout()}
-        deactivateAccount={() => deactivateAccount()}
-        activateAccount={() => activateAccount()}
+        logout={async () => await logout()}
+        deactivateAccount={async () => {
+          await deactivateAccount();
+          await refetchUsers();
+        }}
+        activateAccount={async () => {
+          await activateAccount();
+          await refetchUsers();
+        }}
       />
 
       {loading && page === 1 ? (

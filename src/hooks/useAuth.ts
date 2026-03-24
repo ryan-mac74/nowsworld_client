@@ -33,7 +33,7 @@ export default function useAuth() {
     import.meta.env.VITE_API_URL ||
     "http://localhost:3000/api";
 
-  const fetchUser = useCallback(async () => {
+  const fetchMe = useCallback(async () => {
     if (!isLoading) {
       return;
     }
@@ -60,8 +60,8 @@ export default function useAuth() {
   }, [VITE_API_URL]);
 
   useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    fetchMe();
+  }, [fetchMe]);
 
   const logout = async (toast: boolean = true) => {
     try {
@@ -101,7 +101,7 @@ export default function useAuth() {
       }
 
       setUser((prev) => prev ? { ...prev, is_active: false } : null);
-      await logout(false);
+      navigate("/");
 
       showSuccessToast("Your account has been deactivated");
     } catch (error: unknown) {
@@ -138,7 +138,7 @@ export default function useAuth() {
     user,
     isLoading,
     logout,
-    refetchUser: fetchUser,
+    refetchMe: fetchMe,
     deactivateAccount,
     activateAccount,
   };
