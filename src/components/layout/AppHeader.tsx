@@ -3,7 +3,7 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 import LoginDialog from "@/components/dialogs/LoginDialog";
 import UserMenu from "@/components/navigation/UserMenu";
 import type { UserPublic } from "@/hooks/useAuth";
-import { Menu, Globe } from "lucide-react";
+import { Menu } from "lucide-react";
 
 const VITE_PROJECT_NAME =
     import.meta.env.VITE_PROJECT_NAME ||
@@ -46,20 +46,19 @@ export default function AppHeader({
                 border-b border-neutral-200 dark:border-neutral-800
             "
         >
-            <div className="max-w-2xl mx-auto h-14 flex items-center justify-between gap-4">
+            <div className="max-w-2xl mx-auto h-14 flex items-center justify-between gap-2">
                 {/* Left Section: Sidebar, Language */}
                 <div className="flex items-center justify-start gap-2">
                     <Button className={headerButtonClass} aria-label="Open Sidebar">
                         <Menu size={15} />
                     </Button>
                     <Button className={`${headerButtonClass} uppercase`} aria-label="Change Language">
-                        <Globe size={15} className="mr-0.5" />
-                        EN
+                        <span>EN</span>
                     </Button>
                 </div>
 
                 {/* Center Section: Logo, Name */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-0.5">
                     <img src="/logo.png" alt="NSW" className="w-6 sm:w-8 h-6 sm:h-8 invert dark:invert-0" />
                     <span className="text-2xl sm:text-4xl font-extrabold tracking-tight">
                         {VITE_PROJECT_NAME}
@@ -67,9 +66,9 @@ export default function AppHeader({
                 </div>
 
                 {/* Right Section: Theme, Profile */}
-                <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end gap-1">
                     <ThemeToggle className={headerButtonClass} />
-                    <div className="h-6 w-[1px] bg-neutral-300 dark:bg-neutral-700 mx-1" />
+                    <div className="h-6 sm:h-8 w-[0.5px] bg-neutral-300 dark:bg-neutral-700 m-0" />
 
                     {user ? (
                         <UserMenu
