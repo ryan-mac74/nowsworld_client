@@ -29,7 +29,7 @@ export default function LoginDialog({ user, className }: LoginDialogProps) {
     !bg-blue-600
     !text-white
     !text-sm
-    !sm:text-base
+    sm:!text-lg
     mr-0.5
   `;
 

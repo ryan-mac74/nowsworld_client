@@ -46,9 +46,9 @@ export default function AppHeader({
                 border-b border-neutral-200 dark:border-neutral-800
             "
         >
-            <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+            <div className="max-w-2xl mx-auto h-14 flex items-center justify-between gap-4">
                 {/* Left Section: Sidebar, Language */}
-                <div className="flex items-center gap-2 flex-1">
+                <div className="flex items-center justify-start gap-2">
                     <Button className={headerButtonClass} aria-label="Open Sidebar">
                         <Menu size={15} />
                     </Button>
@@ -59,17 +59,17 @@ export default function AppHeader({
                 </div>
 
                 {/* Center Section: Logo, Name */}
-                <div className="flex items-center gap-2 shrink-0">
-                    <img src="/logo.png" alt="NSW" className="w-8 h-8 invert dark:invert-0" />
-                    <span className="text-lg sm:text-xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+                <div className="flex items-center gap-2">
+                    <img src="/logo.png" alt="NSW" className="w-6 sm:w-8 h-6 sm:h-8 invert dark:invert-0" />
+                    <span className="text-2xl sm:text-4xl font-extrabold tracking-tight">
                         {VITE_PROJECT_NAME}
                     </span>
                 </div>
 
                 {/* Right Section: Theme, Profile */}
-                <div className="flex items-center justify-end gap-2 flex-1">
+                <div className="flex items-center justify-end gap-2">
                     <ThemeToggle className={headerButtonClass} />
-                    <div className="h-8 w-[1px] bg-neutral-300 dark:bg-neutral-700 mx-1" />
+                    <div className="h-6 w-[1px] bg-neutral-300 dark:bg-neutral-700 mx-1" />
 
                     {user ? (
                         <UserMenu

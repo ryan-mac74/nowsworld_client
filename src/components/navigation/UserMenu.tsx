@@ -49,7 +49,7 @@ export default function UserMenu({
             <DropdownMenuTrigger asChild>
                 <div
                     className="
-                        w-10 h-10 flex items-center justify-center font-bold rounded-full 
+                        w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center font-bold rounded-full 
                         bg-neutral-900 dark:bg-white text-neutral-100 dark:text-neutral-900 
                         text-base shrink-0 p-0.5
                     "
