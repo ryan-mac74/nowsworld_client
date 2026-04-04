@@ -53,7 +53,10 @@ export default function LoginDialog({ user, className }: LoginDialogProps) {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <Button className={triggerClass}>
+        <Button
+          className={triggerClass}
+          aria-label={actionLabel}
+        >
           <MenuIcon Icon={actionIcon} />
           {actionLabel}
         </Button>

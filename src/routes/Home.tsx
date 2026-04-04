@@ -163,7 +163,7 @@ export default function Home() {
               onClick={refetchUsers}
               className="
                 bg-red-600 hover:bg-red-700 text-white 
-                mt-2 transition active:scale-95
+                mt-2 active:scale-95
               "
             >
               Try again
@@ -191,7 +191,7 @@ export default function Home() {
                   onClick={() => setPage((prev) => prev)}
                   className="
                     bg-blue-500 hover:bg-blue-700 text-white 
-                    mt-2 transition active:scale-95
+                    mt-2 active:scale-95
                   "
                 >
                   Load more

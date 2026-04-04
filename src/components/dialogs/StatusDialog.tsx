@@ -1,4 +1,5 @@
 import Button from "@/components/ui/Button";
+import { cn } from "@/lib/tailwind-merge";
 
 type StatusDialogProps = {
   type: "loading" | "error" | "success" | "warning";
@@ -46,10 +47,10 @@ export default function StatusDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div
-        className={`
-          w-full max-w-sm rounded-lg bg-white dark:bg-neutral-900 p-6 shadow-lg border 
-          ${isError ? "border-red-500" : "border-neutral-200 dark:border-neutral-700"}
-        `}
+        className={cn(
+          "w-full max-w-sm rounded-lg bg-white dark:bg-neutral-900 p-6 shadow-lg border",
+          isError ? "border-red-500" : "border-neutral-300 dark:border-neutral-700"
+        )}
       >
         <div className="flex flex-col items-center gap-4 text-center">
           {/* Icon */}

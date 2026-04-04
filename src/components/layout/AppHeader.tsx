@@ -15,11 +15,11 @@ const menuItemClass = `
 `;
 
 export const headerButtonClass = `
-    w-15 h-10 rounded-full
     flex items-center justify-center
     border border-neutral-300 dark:border-neutral-700
-    text-neutral-800 dark:text-neutral-200 text-base
+    text-neutral-800 dark:text-neutral-200
     bg-white dark:bg-neutral-800
+    text-sm sm:text-lg rounded-xl
 `;
 
 export type UserMenuProps = {
@@ -50,6 +50,7 @@ export default function AppHeader({
                     <Button className={headerButtonClass} aria-label="Open Sidebar">
                         <Menu size={15} />
                     </Button>
+
                     <Button className={`${headerButtonClass} uppercase`} aria-label="Change Language">
                         <span>EN</span>
                     </Button>
@@ -67,7 +68,7 @@ export default function AppHeader({
                 {/* Right Section */}
                 <div className="flex items-center justify-end gap-1">
                     <ThemeToggle className={headerButtonClass} />
-                    <div className="h-6 sm:h-8 w-[0.5px] bg-neutral-300 dark:bg-neutral-700 m-0" />
+                    <div className="h-4 sm:h-6 w-[0.5px] bg-neutral-300 dark:bg-neutral-700 m-0" />
 
                     {user ? (
                         <UserMenu
