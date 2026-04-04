@@ -13,7 +13,7 @@
   }
 
   body {
-    @apply m-0 min-h-screen bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100;
+    @apply m-0 p-0 min-h-screen bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100;
   }
 
   h1 {
@@ -29,15 +29,10 @@
 }
 
 @layer components {
-  .btn {
-    @apply inline-flex items-center justify-center
-           rounded-md px-4 py-2
-           font-medium
-           transition-colors
-           focus:outline-none focus:ring-2 focus:ring-indigo-500;
-  }
+}
 
-  .btn-color {
-    @apply bg-gray-600 text-gray-100 hover:bg-gray-700;
-  }
+@layer utilities {
+}
+
+@layer responsive {
 }

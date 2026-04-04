@@ -2,15 +2,15 @@ import { useNavigate } from "react-router-dom";
 import LoginDialog from "@/components/dialogs/LoginDialog";
 import LogoutDialog from "@/components/dialogs/LogoutDialog";
 import ActivationDialog from "@/components/dialogs/ActivationDialog";
-import getInitials from "@/utils/getInitials";
 import {
     DropdownMenu,
     DropdownMenuTrigger,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
-} from "@/components/ui/Dropdown-menu";
+} from "@/components/navigation/DropdownMenu";
 import Button from "@/components/ui/Button";
+import Avatar from "@/components/ui/Avatar";
 import MenuIcon from "@/components/ui/MenuIcon";
 import type { UserPublic } from "@/hooks/useAuth";
 import { User, Settings } from "lucide-react";
@@ -47,25 +47,7 @@ export default function UserMenu({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <div
-                    className="
-                        w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center font-bold rounded-full 
-                        bg-neutral-900 dark:bg-white text-neutral-100 dark:text-neutral-900 
-                        text-base shrink-0 p-0.5
-                    "
-                >
-                    {user && (
-                        user.avatar ? (
-                            <img
-                                src={user.avatar}
-                                alt={getInitials(user.name)}
-                                className="w-full h-full rounded-full object-cover text-base"
-                            />
-                        ) : (
-                            <span className="text-base">{getInitials(user.name)}</span>
-                        )
-                    )}
-                </div>
+                <Avatar name={user.name} avatar={user.avatar} />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent

@@ -1,32 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import useAuth from "@/hooks/useAuth";
-import getInitials from "@/utils/getInitials";
-import StatusDialog from "@/components/dialogs/StatusDialog";
 import AppHeader from "@/components/layout/AppHeader";
-
-type Post = {
-  id: number;
-  content: string;
-  published: boolean;
-  createdAt: string;
-  _count: {
-    likes: number;
-    comments: number;
-  };
-};
-
-type User = {
-  id: number;
-  email?: string;
-  username: string;
-  name: string;
-  bio?: string;
-  avatar?: string;
-  is_active: boolean,
-  is_verified: boolean,
-  is_superuser: boolean,
-  posts: Post[];
-};
+import NewsFeedSkeleton from "@/components/skeleton/NewsFeedSkeleton";
+import NewsFeed from "@/components/layout/NewsFeed";
+import type { User } from "@/components/layout/NewsFeed";
+import Button from "@/components/ui/Button";
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
@@ -41,8 +19,8 @@ export default function Home() {
     import.meta.env.VITE_API_URL ||
     "http://localhost:3000/api";
 
-  const userLimit = 10;
-  const postLimit = 5;
+  const userLimit = Number(import.meta.env.VITE_USER_LIMIT) || 5;
+  const postLimit = Number(import.meta.env.VITE_POST_LIMIT) || 10;
 
   const fetchUsersRequest = async (pageToFetch: number) => {
     const res = await fetch(`${VITE_API_URL}/users?page=${pageToFetch}&userLimit=${userLimit}&postLimit=${postLimit}`, {
@@ -103,14 +81,13 @@ export default function Home() {
             // No more users to load
             setHasMore(false);
           }
+
+          setLoading(false);
         }
       } catch (err) {
         if (!ignore) {
           console.error(err);
           setError("❌ Failed to load users");
-        }
-      } finally {
-        if (!ignore) {
           setLoading(false);
         }
       }
@@ -139,7 +116,7 @@ export default function Home() {
         }
       },
       // Trigger callback before visibility
-      { rootMargin: "200px" }
+      { rootMargin: "250px" }
     );
 
     // Start observing the loader element
@@ -163,104 +140,86 @@ export default function Home() {
         }}
       />
 
-      {loading && page === 1 ? (
-        <StatusDialog
-          type="loading"
-          title="Loading users..."
-          message="Please, wait a moment"
-        />
-      ) : error ? (
-        <StatusDialog
-          type="error"
-          title="Error loading users"
-          message={error}
-          onRetry={() => window.location.reload()}
-        />
+      {page === 1 ? (
+        error ? (
+          <div
+            className="
+              w-full max-w-2xl flex flex-col items-center text-center 
+              mt-4 p-4 rounded-lg border border-red-200 dark:border-red-800 
+              bg-red-50 dark:bg-red-800/20 shadow-sm
+            "
+          >
+            <div className="text-2xl mb-2">⚠️</div>
+
+            <h2 className="text-lg font-semibold text-red-700 dark:text-red-300">
+              Something went wrong
+            </h2>
+
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
+
+            <Button
+              onClick={refetchUsers}
+              className="
+                bg-red-600 hover:bg-red-700 text-white 
+                mt-2 transition active:scale-95
+              "
+            >
+              Try again
+            </Button>
+          </div>
+        ) : loading ? (
+          [...Array(2)].map((_, i) => <NewsFeedSkeleton key={i} />)
+        ) : (
+          <NewsFeed users={users} />
+        )
       ) : (
         <>
-          {users.map((user) => (
-            <div
-              key={user.id}
-              className="w-full max-w-2xl border border-neutral-200 dark:border-neutral-700 rounded-lg p-6 shadow-md bg-white dark:bg-neutral-800"
-            >
-              {/* User Info */}
-              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 flex items-center justify-center gap-2 text-center">
-                <div className="w-10 h-10 flex items-center justify-center font-bold rounded-full bg-neutral-900 dark:bg-white text-neutral-100 dark:text-neutral-900 shrink-0 p-0.5">
-                  {user.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt={getInitials(user.name)}
-                      className="w-full h-full rounded-full object-cover text-base"
-                    />
-                  ) : (
-                    <span className="text-base">{getInitials(user.name)}</span>
-                  )}
-                </div>
-                <span>{user.name}</span>
-                <span className="text-neutral-500 dark:text-neutral-300 text-lg font-normal">
-                  @{user.username}
-                </span>
-              </h2>
-              {user.email && !user.email.endsWith(".oauth") && (
-                <p className="text-neutral-600 dark:text-neutral-300 text-m">{user.email}</p>
-              )}
-              {user.bio && (
-                <p className="text-neutral-600 dark:text-neutral-200 mt-2 italic">{user.bio}</p>
-              )}
+          <NewsFeed users={users} />
 
-              {/* User Posts */}
-              <div className="mt-6">
-                {user.posts.length === 0 ? (
-                  <p className="text-neutral-500 dark:text-neutral-400">No posts yet</p>
-                ) : (
-                  <ul className="space-y-4">
-                    {user.posts.map((post) => (
-                      <li
-                        key={post.id}
-                        className="border border-neutral-200 dark:border-neutral-700 rounded p-4 bg-neutral-50 dark:bg-neutral-900"
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-neutral-500">
-                            {new Date(post.createdAt).toLocaleString()}
-                          </span>
+          {loading ? (
+            [...Array(1)].map((_, i) => <NewsFeedSkeleton key={i} />)
+          ) : (
+            error && (
+              <div className="w-full max-w-2xl flex flex-col items-center">
+                <p className="mt-2 text-sm text-red-500">
+                  {error}
+                </p>
 
-                          {!post.published && (
-                            <span className="text-xs text-orange-800 dark:text-orange-200 bg-orange-100 dark:bg-orange-800/30 px-2 py-0.5 rounded">
-                              Draft
-                            </span>
-                          )}
-                        </div>
-
-                        <p className="text-neutral-800 dark:text-neutral-200 mt-2">
-                          {post.content}
-                        </p>
-
-                        {/*
-                        
-                        <div className="flex gap-4 mt-3 text-sm text-neutral-400">
-                          <span>❤️ {post._count.likes}</span>
-                          <span>💬 {post._count.comments}</span>
-                        </div>
-                        
-                        */}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <Button
+                  onClick={() => setPage((prev) => prev)}
+                  className="
+                    bg-blue-500 hover:bg-blue-700 text-white 
+                    mt-2 transition active:scale-95
+                  "
+                >
+                  Load more
+                </Button>
               </div>
-            </div>
-          ))}
-
-          {hasMore && (
-            <div ref={loaderRef} className="h-8 w-full flex justify-center items-center">
-              <span className="text-neutral-500 dark:text-neutral-400">Loading more users...</span>
-            </div>
-          )}
-
-          {!hasMore && users.length > 0 && (
-            <p className="text-neutral-500 dark:text-neutral-400 text-center mt-4">No more users to load</p>
+            )
           )}
         </>
+      )}
+
+      {!error && hasMore && !loading && (
+        <div ref={loaderRef} className="h-4 w-full flex justify-center items-center">
+          <span className="text-neutral-500 dark:text-neutral-400">
+            Scroll to load more
+          </span>
+        </div>
+      )}
+
+      {!error && loading && page > 1 && (
+        <p className="text-neutral-500 dark:text-neutral-400 text-center m-2">
+          Loading more users...
+        </p>
+      )}
+
+      {!error && !hasMore && users.length > 0 && (
+        <p className="text-neutral-500 dark:text-neutral-400 text-center m-2">
+          No more users to load
+        </p>
       )}
     </div >
   );

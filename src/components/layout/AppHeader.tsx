@@ -1,13 +1,11 @@
+import { Link } from "react-router-dom";
 import Button from "@/components/ui/Button";
+import Brand from "@/components/ui/Brand";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import LoginDialog from "@/components/dialogs/LoginDialog";
 import UserMenu from "@/components/navigation/UserMenu";
 import type { UserPublic } from "@/hooks/useAuth";
 import { Menu } from "lucide-react";
-
-const VITE_PROJECT_NAME =
-    import.meta.env.VITE_PROJECT_NAME ||
-    "NowSWorld";
 
 const menuItemClass = `
     w-full h-8 flex items-center justify-center
@@ -47,7 +45,7 @@ export default function AppHeader({
             "
         >
             <div className="max-w-2xl mx-auto h-14 flex items-center justify-between gap-2">
-                {/* Left Section: Sidebar, Language */}
+                {/* Left Section */}
                 <div className="flex items-center justify-start gap-2">
                     <Button className={headerButtonClass} aria-label="Open Sidebar">
                         <Menu size={15} />
@@ -57,15 +55,16 @@ export default function AppHeader({
                     </Button>
                 </div>
 
-                {/* Center Section: Logo, Name */}
-                <div className="flex items-center gap-0.5">
-                    <img src="/logo.png" alt="NSW" className="w-6 sm:w-8 h-6 sm:h-8 invert dark:invert-0" />
-                    <span className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-                        {VITE_PROJECT_NAME}
-                    </span>
-                </div>
+                {/* Center Section */}
+                <Link
+                    to="/"
+                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                    className="flex items-center gap-0.5 sm:gap-1 no-underline text-inherit"
+                >
+                    <Brand />
+                </Link>
 
-                {/* Right Section: Theme, Profile */}
+                {/* Right Section */}
                 <div className="flex items-center justify-end gap-1">
                     <ThemeToggle className={headerButtonClass} />
                     <div className="h-6 sm:h-8 w-[0.5px] bg-neutral-300 dark:bg-neutral-700 m-0" />
