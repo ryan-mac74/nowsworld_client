@@ -30,45 +30,58 @@ type NewsFeedProps = {
 
 export default function NewsFeed({ users }: NewsFeedProps) {
     return (
-        <>
+        <div
+            className="flex flex-col items-center gap-4 w-full"
+            style={{ touchAction: "pan-y" }}
+        >
             {users.map((user) => (
                 <div
                     key={user.id}
                     className="
                         w-full max-w-2xl border border-neutral-200 dark:border-neutral-700 
-                        rounded-lg p-4 shadow-md bg-white dark:bg-neutral-800
+                        rounded-lg p-2 shadow-md bg-white dark:bg-neutral-800
                     "
                 >
                     {/* User Info */}
                     <>
-                        <h2
-                            className="
-                            text-2xl font-bold text-neutral-900 dark:text-neutral-100 
-                            flex items-center justify-center text-center gap-2
-                        "
-                        >
+                        <div className="flex items-center justify-center text-center gap-2">
                             <Avatar name={user.name} avatar={user.avatar} />
+                            <div className="flex flex-col justify-center items-center gap-0.5">
+                                <span className="text-neutral-900 dark:text-neutral-100 text-2xl font-bold">
+                                    {user.name}
+                                </span>
 
-                            <span>{user.name}</span>
-                            <span className="text-neutral-500 dark:text-neutral-300 text-lg font-normal">
-                                @{user.username}
-                            </span>
-                        </h2 >
+                                {/* TODO
+                                
+                                <span className="text-neutral-500 dark:text-neutral-300 text-lg font-normal">
+                                    @{user.username}
+                                </span>
+
+                                */}
+                            </div>
+                        </div >
+
+
+                        {/* TODO
+                        
                         {
                             user.email && !user.email.endsWith(".oauth") && (
-                                <p className="text-neutral-600 dark:text-neutral-300 text-m">{user.email}</p>
+                                <p className="text-neutral-600 dark:text-neutral-300">{user.email}</p>
                             )
                         }
+
+                        */}
+
                         {
                             user.bio && (
-                                <p className="text-neutral-600 dark:text-neutral-200 mt-2 italic">{user.bio}</p>
+                                <p className="text-neutral-600 dark:text-neutral-200 italic mt-2">{user.bio}</p>
                             )
                         }
                     </>
 
                     {/* User Posts */}
                     <div className="mt-4">
-                        {user.posts.length === 0 ? (
+                        {(user.posts.length === 0) ? (
                             <p className="text-neutral-400">No posts yet</p>
                         ) : (
                             <ul className="space-y-4">
@@ -85,7 +98,7 @@ export default function NewsFeed({ users }: NewsFeedProps) {
                                                 {new Date(post.createdAt).toLocaleString()}
                                             </span>
 
-                                            {/*
+                                            {/* TODO
                                             
                                             {!post.published && (
                                                 <span
@@ -105,7 +118,7 @@ export default function NewsFeed({ users }: NewsFeedProps) {
                                             {post.content}
                                         </p>
 
-                                        {/*
+                                        {/* TODO
                         
                                         <div className="flex gap-4 mt-2 text-sm text-neutral-400">
                                             <span>❤️ {post._count.likes}</span>
@@ -121,6 +134,6 @@ export default function NewsFeed({ users }: NewsFeedProps) {
                 </div >
             ))
             }
-        </>
+        </div>
     );
 }

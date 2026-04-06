@@ -1,9 +1,13 @@
 import { Routes, Route } from "react-router-dom";
 import "@/App.css";
+import OAuthHandler from "@/components/auth/OAuthHandler";
+import MainLayout from "@/components/layout/MainLayout";
 import NotFound from "@/routes/NotFound";
 import Home from "@/routes/Home";
-import Login from "@/components/dialogs/LoginDialog";
-import OAuthHandler from "@/components/auth/OAuthHandler";
+import Chat from "@/routes/Chat";
+import Search from "@/routes/Search";
+import Notification from "@/routes/Notification";
+import Profile from "@/routes/Profile";
 import { Toaster } from "sonner";
 
 export default function App() {
@@ -13,9 +17,14 @@ export default function App() {
       <OAuthHandler />
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<NotFound />} />
+        <Route element={<MainLayout />}>
+          <Route path="*" element={<NotFound />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/notification" element={<Notification />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
       </Routes>
     </>
   )

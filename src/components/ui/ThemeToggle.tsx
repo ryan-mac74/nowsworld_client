@@ -6,11 +6,11 @@ export default function ThemeToggle({ className }: { className?: string }) {
 
   return (
     <Button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme((theme === "dark") ? "light" : "dark")}
       aria-label="Switch Theme"
       className={className}
     >
-      {theme === "dark" ? "☀️" : "🌙"}
+      {(theme === "dark") ? "☀️" : "🌙"}
     </Button>
   );
 }

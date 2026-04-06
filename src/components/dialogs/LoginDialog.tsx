@@ -26,7 +26,7 @@ export default function LoginDialog({ user, className }: LoginDialogProps) {
 
   const loginButtonClass = `
     ${headerButtonClass}
-    !bg-blue-600
+    !bg-green-600
     !text-white
     !text-sm
     sm:!text-lg

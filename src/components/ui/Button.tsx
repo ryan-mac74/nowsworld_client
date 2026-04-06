@@ -2,6 +2,7 @@ import { cn } from "@/lib/tailwind-merge";
 
 type ButtonProps = {
   children: React.ReactNode;
+  type?: "button" | "submit" | "reset";
   onClick?: () => void;
   disabled?: boolean;
   aria_label?: string;
@@ -10,6 +11,7 @@ type ButtonProps = {
 
 export default function Button({
   children,
+  type = "button",
   onClick,
   disabled,
   aria_label = "",
@@ -17,6 +19,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       aria-label={aria_label}

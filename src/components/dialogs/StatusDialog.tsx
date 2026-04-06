@@ -42,7 +42,7 @@ export default function StatusDialog({
     warning: "text-yellow-600 dark:text-yellow-400",
   };
 
-  const isError = type === "error";
+  const isError = (type === "error");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

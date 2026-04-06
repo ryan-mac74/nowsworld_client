@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import useAuth from "@/hooks/useAuth";
-import AppHeader from "@/components/layout/AppHeader";
 import NewsFeedSkeleton from "@/components/skeleton/NewsFeedSkeleton";
 import NewsFeed from "@/components/layout/NewsFeed";
 import type { User } from "@/components/layout/NewsFeed";
@@ -13,7 +11,6 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
-  const { user, logout, deactivateAccount, activateAccount } = useAuth();
 
   const VITE_API_URL =
     import.meta.env.VITE_API_URL ||
@@ -37,6 +34,7 @@ export default function Home() {
   const refetchUsers = async () => {
     setLoading(true);
     setError(null);
+    setHasMore(true);
 
     try {
       // Refetch 1st page of users
@@ -125,22 +123,18 @@ export default function Home() {
     return () => observer.disconnect();
   }, [loaderRef, hasMore, loading]);
 
-  return (
-    <div className="min-h-screen flex flex-col items-center gap-4 bg-white dark:bg-neutral-900">
-      <AppHeader
-        user={user}
-        logout={async () => await logout()}
-        deactivateAccount={async () => {
-          await deactivateAccount();
-          await refetchUsers();
-        }}
-        activateAccount={async () => {
-          await activateAccount();
-          await refetchUsers();
-        }}
-      />
+  // Listen for manual refetch triggers
+  useEffect(() => {
+    const handleRefetch = () => refetchUsers();
+    window.addEventListener("refetch-feed", handleRefetch);
 
-      {page === 1 ? (
+    // Cleanup listener on unmount
+    return () => window.removeEventListener("refetch-feed", handleRefetch);
+  }, []);
+
+  return (
+    <main className="w-full flex-1 flex flex-col items-center gap-4 pt-2 pb-2">
+      {(page === 1) ? (
         error ? (
           <div
             className="
@@ -221,6 +215,6 @@ export default function Home() {
           No more users to load
         </p>
       )}
-    </div >
+    </main>
   );
 }

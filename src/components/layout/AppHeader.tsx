@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Button from "@/components/ui/Button";
 import Brand from "@/components/ui/Brand";
@@ -6,6 +7,7 @@ import LoginDialog from "@/components/dialogs/LoginDialog";
 import UserMenu from "@/components/navigation/UserMenu";
 import type { UserPublic } from "@/hooks/useAuth";
 import { Menu } from "lucide-react";
+import Sidebar from "@/components/navigation/Sidebar";
 
 const menuItemClass = `
     w-full h-8 flex items-center justify-center
@@ -35,6 +37,23 @@ export default function AppHeader({
     deactivateAccount,
     activateAccount,
 }: UserMenuProps) {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        const handleOpenSidebar = () => setIsSidebarOpen(true);
+        const handleCloseSidebar = () => setIsSidebarOpen(false);
+
+        // Listen for events to open/close the sidebar from anywhere
+        window.addEventListener("open-sidebar", handleOpenSidebar);
+        window.addEventListener("close-sidebar", handleCloseSidebar);
+
+        return () => {
+            // Clean up event listeners on unmount
+            window.removeEventListener("open-sidebar", handleOpenSidebar);
+            window.removeEventListener("close-sidebar", handleCloseSidebar);
+        };
+    }, []);
+
     return (
         <header
             className="
@@ -47,11 +66,15 @@ export default function AppHeader({
             <div className="max-w-2xl mx-auto h-14 flex items-center justify-between gap-2">
                 {/* Left Section */}
                 <div className="flex items-center justify-start gap-2">
-                    <Button className={headerButtonClass} aria-label="Open Sidebar">
+                    <Button
+                        className={headerButtonClass}
+                        aria-label="Open Sidebar"
+                        onClick={() => setIsSidebarOpen(true)}
+                    >
                         <Menu size={15} />
                     </Button>
 
-                    <Button className={`${headerButtonClass} uppercase`} aria-label="Change Language">
+                    <Button disabled className={`${headerButtonClass} uppercase`} aria-label="Change Language">
                         <span>EN</span>
                     </Button>
                 </div>
@@ -92,6 +115,12 @@ export default function AppHeader({
                     )}
                 </div>
             </div>
+
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+                isOverlay
+            />
         </header>
     );
 }
