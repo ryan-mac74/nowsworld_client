@@ -13,8 +13,8 @@ export default function NewsFeedSkeleton() {
                 <Skeleton className="w-8 h-8 rounded-full" />
 
                 <div className="flex flex-col items-center gap-2">
-                    <Skeleton className="h-4 w-44" />
                     <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-4 w-44" />
                 </div>
             </div>
 

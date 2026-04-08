@@ -13,7 +13,8 @@ export default defineConfig(({ mode }) => {
       // Else => use domain name
       allowedHosts: mode === 'development'
         ? true
-        : [env.VITE_FRONTEND_URL || "http://localhost:5173"],
+        : (env.VITE_ALLOWED_HOSTS || "http://localhost:5173")
+          .split(",").map(host => host.trim()),
 
       proxy: {
         "/api": {
