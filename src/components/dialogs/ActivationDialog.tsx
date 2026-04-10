@@ -1,54 +1,64 @@
 import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { CheckCircle, XCircle, X } from "lucide-react";
+import { CheckCircle, Trash2, XCircle, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import MenuIcon from "@/components/ui/MenuIcon";
 
 type ActivationDialogProps = {
   className?: string;
-  isActive: boolean;
-  onActivate?: () => void;
-  onDeactivate?: () => void;
+  action: "activate" | "deactivate" | "delete";
+  deletedAt?: string | Date | null;
+  onConfirm?: () => void;
 };
 
 export default function ActivationDialog({
   className,
-  isActive,
-  onActivate,
-  onDeactivate,
+  action,
+  deletedAt,
+  onConfirm,
 }: ActivationDialogProps) {
   const [open, setOpen] = useState(false);
 
   const handleAction = async () => {
     try {
-      if (isActive) {
-        await onDeactivate?.();
-      } else {
-        await onActivate?.();
-      }
+      await onConfirm?.();
       setOpen(false);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const actionIcon = isActive ? XCircle : CheckCircle;
+  let actionIcon = CheckCircle;
+  let actionLabel = "";
+  let actionTitle = "";
+  let description = "";
+  let actionButtonClass = "";
 
-  const actionLabel = isActive
-    ? "Delete Account"
-    : "Activate Account";
-
-  const actionTitle = isActive
-    ? "Delete your account"
-    : "Activate your account";
-
-  const description = isActive
-    ? "Your account will temporarily be disabled. Full deletion may take up to 4+ weeks"
-    : "Your account is currently deactivated. Activate it to prevent permanent deletion";
-
-  const actionButtonClass = isActive
-    ? "bg-red-600 dark:bg-red-700 text-white hover:bg-red-800"
-    : "bg-green-600 dark:bg-green-700 text-white hover:bg-green-800";
+  switch (action) {
+    case "activate":
+      actionIcon = CheckCircle;
+      actionLabel = deletedAt ? "Cancel Deletion" : "Activate Account";
+      actionTitle = deletedAt ? "Cancel account deletion" : "Reactivate your account";
+      description = deletedAt
+        ? "Your account is scheduled for permanent deletion. Cancel the process to keep your account"
+        : "Your account is currently disabled. Activate it to resume full feature access";
+      actionButtonClass = "bg-green-600 dark:bg-green-700 text-white hover:bg-green-800";
+      break;
+    case "deactivate":
+      actionIcon = XCircle;
+      actionLabel = "Deactivate Account";
+      actionTitle = "Deactivate your account";
+      description = "Your account will temporarily be disabled. Reactivate it at any time for full feature access";
+      actionButtonClass = "bg-yellow-600 dark:bg-yellow-700 text-white hover:bg-yellow-800";
+      break;
+    case "delete":
+      actionIcon = Trash2;
+      actionLabel = "Delete Account";
+      actionTitle = "Delete your account";
+      description = "Your account will be permanently deleted within 4+ weeks. Reactivate it to prevent permanent deletion";
+      actionButtonClass = "bg-red-600 dark:bg-red-700 text-white hover:bg-red-800";
+      break;
+  }
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>

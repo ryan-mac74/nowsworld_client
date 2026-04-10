@@ -27,6 +27,8 @@ export const headerButtonClass = `
 export type UserMenuProps = {
     user: UserPublic | null;
     logout: () => void;
+    deleteAllAccounts: () => void;
+    deleteAccount: () => void;
     deactivateAccount: () => void;
     activateAccount: () => void;
 };
@@ -34,6 +36,8 @@ export type UserMenuProps = {
 export default function AppHeader({
     user,
     logout,
+    deleteAllAccounts,
+    deleteAccount,
     deactivateAccount,
     activateAccount,
 }: UserMenuProps) {
@@ -98,6 +102,12 @@ export default function AppHeader({
                             user={user}
                             logout={async () => {
                                 await logout();
+                            }}
+                            deleteAllAccounts={async () => {
+                                await deleteAllAccounts();
+                            }}
+                            deleteAccount={async () => {
+                                await deleteAccount();
                             }}
                             deactivateAccount={async () => {
                                 await deactivateAccount();

@@ -46,9 +46,8 @@ export default function LoginDialog({ user, className }: LoginDialogProps) {
     : "Log in to your account";
 
   const description = isLoggedIn
-    ? "Connect another provider to your account"
-    : "Choose any provider first, link another account later";
-
+    ? "Connect another profile from any of the providers below to your account for more log in flexibility"
+    : "Choose an account from any of the providers below for starters, then link another profile later";
 
   return (
     <Dialog.Root>

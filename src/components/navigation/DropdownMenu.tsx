@@ -54,7 +54,7 @@ function DropdownMenuItem({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
   inset?: boolean
-  variant?: "default" | "destructive" | "success" | "info" | "warning"
+  variant?: "default" | "destructive" | "success" | "info" | "warning" | "accent" | "danger"
 }) {
   return (
     <DropdownMenuPrimitive.Item
@@ -75,6 +75,12 @@ function DropdownMenuItem({
 
         (variant === "warning") &&
         "text-yellow-600 focus:bg-yellow-100 dark:focus:bg-yellow-800/20",
+
+        (variant === "accent") &&
+        "text-pink-600 focus:bg-pink-100 dark:focus:bg-pink-800/20",
+
+        (variant === "danger") &&
+        "text-orange-600 focus:bg-orange-100 dark:bg-orange-800/20",
 
         className
       )}

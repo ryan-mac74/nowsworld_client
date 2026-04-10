@@ -13,7 +13,7 @@ import Button from "@/components/ui/Button";
 import Avatar from "@/components/ui/Avatar";
 import MenuIcon from "@/components/ui/MenuIcon";
 import type { UserPublic } from "@/hooks/useAuth";
-import { User, Settings } from "lucide-react";
+import { User, Settings, Clock } from "lucide-react";
 
 const menuItems = [
     { label: "Profile", path: "/profile", icon: User },
@@ -24,12 +24,14 @@ export type MenuItem = {
     label: string;
     path: string;
     icon: React.ElementType;
-    variant?: "default" | "destructive" | "success" | "info";
+    variant?: "default" | "destructive" | "success" | "info" | "warning" | "accent" | "danger";
 };
 
 type UserMenuProps = {
     user: UserPublic;
     logout: () => void;
+    deleteAllAccounts: () => void;
+    deleteAccount: () => void;
     deactivateAccount: () => void;
     activateAccount: () => void;
     className?: string;
@@ -38,6 +40,8 @@ type UserMenuProps = {
 export default function UserMenu({
     user,
     logout,
+    deleteAllAccounts,
+    deleteAccount,
     deactivateAccount,
     activateAccount,
     className,
@@ -75,20 +79,14 @@ export default function UserMenu({
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem
-                    variant="info"
-                    asChild
-                >
+                <DropdownMenuItem variant="info" asChild>
                     <LoginDialog
                         user={user}
                         className={className}
                     />
                 </DropdownMenuItem>
 
-                <DropdownMenuItem
-                    variant="warning"
-                    asChild
-                >
+                <DropdownMenuItem variant="warning" asChild>
                     <LogoutDialog
                         className={className}
                         onLogout={async () => {
@@ -99,21 +97,56 @@ export default function UserMenu({
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem
-                    variant={user.is_active ? "destructive" : "success"}
-                    asChild
-                >
-                    <ActivationDialog
-                        className={className}
-                        isActive={user.is_active}
-                        onDeactivate={async () => {
-                            await deactivateAccount();
-                        }}
-                        onActivate={async () => {
-                            await activateAccount();
-                        }}
-                    />
-                </DropdownMenuItem>
+                {user.is_active ? (
+                    <>
+                        <DropdownMenuItem variant="accent" asChild>
+                            <ActivationDialog
+                                className={className}
+                                action="deactivate"
+                                onConfirm={async () => {
+                                    await deactivateAccount();
+                                }}
+                            />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem variant="destructive" asChild>
+                            <ActivationDialog
+                                className={className}
+                                action="delete"
+                                onConfirm={async () => {
+                                    await deleteAccount();
+                                }}
+                            />
+                        </DropdownMenuItem>
+                    </>
+                ) : (
+                    <DropdownMenuItem variant="success" asChild>
+                        <ActivationDialog
+                            className={className}
+                            action="activate"
+                            deletedAt={user.deletedAt}
+                            onConfirm={async () => {
+                                await activateAccount();
+                            }}
+                        />
+                    </DropdownMenuItem>
+                )}
+
+                {user.is_superuser && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem variant="danger" asChild>
+                            <Button
+                                className={className}
+                                onClick={async () => {
+                                    await deleteAllAccounts();
+                                }}
+                            >
+                                <MenuIcon Icon={Clock} />
+                                Delete All Accounts
+                            </Button>
+                        </DropdownMenuItem>
+                    </>
+                )}
             </DropdownMenuContent>
         </DropdownMenu>
     );

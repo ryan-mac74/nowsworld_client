@@ -12,6 +12,7 @@ export type UserPublic = {
   address?: string;
   gender?: string;
   dateOfBirth?: string;
+  deletedAt?: string;
   is_active: boolean;
   is_verified: boolean;
   is_superuser: boolean;
@@ -86,6 +87,57 @@ export default function useAuth() {
     }
   };
 
+  const deleteAllAccounts = async () => {
+    if (!user || !user.is_superuser) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${VITE_API_URL}/auth/delete-all`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("❌ Failed to process all scheduled account deletions");
+      }
+
+      showSuccessToast("All scheduled account deletions have been processed");
+    } catch (error: unknown) {
+      console.error(error);
+      showErrorToast("Something went wrong");
+    }
+  };
+
+  const deleteAccount = async () => {
+    if (!user) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${VITE_API_URL}/auth/delete`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("❌ Failed to schedule account deletion");
+      }
+
+      setUser((prev) => prev ? {
+        ...prev,
+        is_active: false,
+        deletedAt: new Date().toISOString()
+      } : null);
+      navigate("/");
+
+      showSuccessToast("Your account has been scheduled for deletion");
+    } catch (error: unknown) {
+      console.error(error);
+      showErrorToast("Something went wrong");
+    }
+  };
+
   const deactivateAccount = async () => {
     if (!user) {
       return;
@@ -96,11 +148,15 @@ export default function useAuth() {
         method: "POST",
         credentials: "include",
       });
+
       if (!res.ok) {
         throw new Error("❌ Failed to deactivate account");
       }
 
-      setUser((prev) => prev ? { ...prev, is_active: false } : null);
+      setUser((prev) => prev ? {
+        ...prev,
+        is_active: false,
+      } : null);
       navigate("/");
 
       showSuccessToast("Your account has been deactivated");
@@ -120,14 +176,37 @@ export default function useAuth() {
         method: "POST",
         credentials: "include",
       });
+
       if (!res.ok) {
         throw new Error("❌ Failed to reactivate account");
       }
 
-      setUser((prev) => prev ? { ...prev, is_active: true } : null);
+      setUser((prev) => prev ? {
+        ...prev,
+        is_active: true,
+        deletedAt: undefined,
+      } : null);
       navigate("/");
 
       showSuccessToast("Your account has been reactivated");
+    } catch (error: unknown) {
+      console.error(error);
+      showErrorToast("Something went wrong");
+    }
+  };
+
+  const oauthConsent = async () => {
+    try {
+      const res = await fetch(`${VITE_API_URL}/auth/consent`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("❌ Failed to create account");
+      }
+
+      window.location.href = "/?auth=signup-success";
     } catch (error: unknown) {
       console.error(error);
       showErrorToast("Something went wrong");
@@ -139,7 +218,10 @@ export default function useAuth() {
     isLoading,
     logout,
     refetchMe: fetchMe,
+    deleteAllAccounts,
+    deleteAccount,
     deactivateAccount,
     activateAccount,
+    oauthConsent,
   };
 }

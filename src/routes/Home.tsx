@@ -47,8 +47,8 @@ export default function Home() {
         // No more users to load
         setHasMore(false);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       setError("❌ Failed to refresh users");
     } finally {
       setLoading(false);
@@ -82,9 +82,9 @@ export default function Home() {
 
           setLoading(false);
         }
-      } catch (err) {
+      } catch (error) {
         if (!ignore) {
-          console.error(err);
+          console.error(error);
           setError("❌ Failed to load users");
           setLoading(false);
         }

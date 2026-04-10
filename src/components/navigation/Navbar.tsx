@@ -126,7 +126,7 @@ export default function Navbar() {
             className="
                 max-w-2xl mx-auto fixed bottom-0 left-0 right-0 w-full h-14 
                 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 
-                z-50 flex shadow-[0_-2px_10px_rgba(0,0,0,0.05)] dark:shadow-none
+                z-10 flex shadow-[0_-2px_10px_rgba(0,0,0,0.05)] dark:shadow-none
             "
         >
             {/* Sliding active indicator */}

@@ -16,8 +16,8 @@ export default function LogoutDialog({ className, onLogout }: LogoutDialogProps)
     try {
       await onLogout?.();
       setOpen(false);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     }
   };
 
