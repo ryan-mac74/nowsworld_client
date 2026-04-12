@@ -19,8 +19,8 @@ export default function App() {
       <OAuthHandler />
 
       <Routes>
+        <Route path="*" element={<NotFound />} />
         <Route element={<MainLayout />}>
-          <Route path="*" element={<NotFound />} />
           <Route path="/" element={<Home />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/search" element={<Search />} />

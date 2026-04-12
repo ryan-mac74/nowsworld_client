@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { Link } from "react-router-dom";
 import { MessageSquare, Mail, Phone } from "lucide-react";
 import useCustomToast from "@/hooks/useCustomToast";
 import Button from "@/components/ui/Button";
@@ -66,6 +65,11 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
             setIsSubmittingFeedback(false);
         }
     };
+
+    const width = Math.round(window.screen.width * 0.8);
+    const height = Math.round(window.screen.height * 0.8);
+    const left = Math.round((window.screen.width - width) / 2);
+    const top = Math.round((window.screen.height - height) / 2);
 
     const baseClasses = "w-3/4 max-w-lg h-screen flex flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 overflow-y-auto";
     const overlayClasses = `fixed top-0 left-0 z-50 shadow-2xl transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"}`;
@@ -178,10 +182,21 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                         
                         */}
 
-                        <a href={VITE_WHATSAPP_URL} target="_blank" rel="noreferrer" className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition">
+                        <a
+                            href={VITE_WHATSAPP_URL}
+                            target="_blank" rel="noreferrer"
+                            className="
+                                text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition
+                            "
+                        >
                             <Phone size={18} />
                         </a>
-                        <a href={`mailto:${VITE_CONTACT_EMAIL}`} className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300 transition truncate">
+                        <a
+                            href={`mailto:${VITE_CONTACT_EMAIL}`}
+                            className="
+                                text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300 transition truncate
+                            "
+                        >
                             {VITE_CONTACT_EMAIL}
                         </a>
                     </div>
@@ -189,8 +204,40 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                     <div className="flex flex-col gap-1.5">
                         {/* Legal Links */}
                         <div className="flex flex-wrap justify-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
-                            <Link to="/terms-of-service" className="hover:text-neutral-900 dark:hover:text-neutral-200 transition">Terms of Service</Link>
-                            <Link to="/privacy-policy" className="hover:text-neutral-900 dark:hover:text-neutral-200 transition">Privacy Policy</Link>
+                            <a
+                                onClick={(e) => {
+                                    e.preventDefault();
+
+                                    window.open(
+                                        "/terms-of-service",
+                                        "popup",
+                                        `toolbar=no,scrollbars=yes,resizable=yes,top=${top},left=${left},width=${width},height=${height}`
+                                    );
+                                }}
+                                className="
+                                    hover:text-neutral-900 dark:hover:text-neutral-200 transition
+                                    hover:underline break-all cursor-pointer
+                                "
+                            >
+                                Terms of Service
+                            </a>
+                            <a
+                                onClick={(e) => {
+                                    e.preventDefault();
+
+                                    window.open(
+                                        "/privacy-policy",
+                                        "popup",
+                                        `toolbar=no,scrollbars=yes,resizable=yes,top=${top},left=${left},width=${width},height=${height}`
+                                    );
+                                }}
+                                className="
+                                    hover:text-neutral-900 dark:hover:text-neutral-200 transition
+                                    hover:underline break-all cursor-pointer
+                                "
+                            >
+                                Privacy Policy
+                            </a>
                         </div>
 
                         {/* Copyright */}

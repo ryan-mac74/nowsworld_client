@@ -37,7 +37,7 @@ export default function NewsFeed({ users }: NewsFeedProps) {
     return (
         <div
             className="flex flex-col items-center gap-4 w-full"
-            style={{ touchAction: "pan-y pinch-zoom" }}
+            style={{ touchAction: "pan-y" }}
         >
             <PullToRefreshIcon
                 isRefreshing={isRefreshing}
