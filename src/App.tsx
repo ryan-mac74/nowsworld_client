@@ -9,8 +9,10 @@ import Search from "@/routes/Search";
 import Notification from "@/routes/Notification";
 import Profile from "@/routes/Profile";
 import { Toaster } from "sonner";
+import usePWA from "@/hooks/usePWA";
 
 export default function App() {
+  usePWA();
   return (
     <>
       <Toaster richColors position="top-right" />

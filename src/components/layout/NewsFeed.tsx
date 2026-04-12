@@ -1,3 +1,6 @@
+import renderContentWithLinks from "@/utils/renderLinks";
+import usePullToRefresh from "@/hooks/usePullToRefresh";
+import PullToRefreshIcon from "@/components/ui/PullToRefreshIcon";
 import Avatar from "@/components/ui/Avatar";
 
 export type Post = {
@@ -29,11 +32,19 @@ type NewsFeedProps = {
 };
 
 export default function NewsFeed({ users }: NewsFeedProps) {
+    const { isRefreshing, indicatorRef, iconRef } = usePullToRefresh();
+
     return (
         <div
             className="flex flex-col items-center gap-4 w-full"
-            style={{ touchAction: "pan-y" }}
+            style={{ touchAction: "pan-y pinch-zoom" }}
         >
+            <PullToRefreshIcon
+                isRefreshing={isRefreshing}
+                indicatorRef={indicatorRef}
+                iconRef={iconRef}
+            />
+
             {users.map((user) => (
                 <div
                     key={user.id}
@@ -114,8 +125,8 @@ export default function NewsFeed({ users }: NewsFeedProps) {
                                             */}
                                         </div>
 
-                                        <p className="text-neutral-800 dark:text-neutral-200 mt-2">
-                                            {post.content}
+                                        <p className="text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap mt-2">
+                                            {renderContentWithLinks(post.content)}
                                         </p>
 
                                         {/* TODO

@@ -114,7 +114,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                             disabled={isSubmittingFeedback}
                             placeholder="Say what's on your mind..."
                             className="
-                                w-full text-sm p-2 rounded-md border 
+                                w-full text-base md:text-sm p-2 rounded-md border 
                                 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 
                                 text-neutral-900 dark:text-neutral-100 resize-none outline-none 
                                 focus:ring-2 focus:ring-blue-500 transition-shadow disabled:opacity-50
@@ -145,7 +145,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                             type="email"
                             placeholder="Your email address"
                             className="
-                                w-full text-sm p-2 rounded-md border border-neutral-200 dark:border-neutral-700 
+                                w-full text-base md:text-sm p-2 rounded-md border border-neutral-200 dark:border-neutral-700 
                                 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 
                                 outline-none focus:ring-2 focus:ring-blue-500 transition-shadow
                             "

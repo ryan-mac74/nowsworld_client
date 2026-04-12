@@ -26,7 +26,6 @@ export default function Navbar() {
         let isHorizontalSwipe = false;
         let isSidebarOpenAtStart = false;
 
-        const mainContent = document.querySelector("main");
         const sidebar = document.getElementById("app-sidebar");
 
         const handleTouchStart = (e: TouchEvent) => {
@@ -56,18 +55,11 @@ export default function Navbar() {
                         sidebar.style.transform = `translateX(-${diffX}px)`;
                     }
                 } else {
-                    if ((diffX < 0) && (activeTab === 0)) {
+                    if (diffX < 0) {
                         // Pulling the sidebar open 1:1
                         if (sidebar) {
                             sidebar.style.transition = "none";
                             sidebar.style.transform = `translateX(calc(-100% + ${Math.abs(diffX)}px))`;
-                        }
-                    } else {
-                        // Sliding the main content 1:1 between tabs
-                        const mainContent = document.querySelector("main");
-                        if (mainContent) {
-                            mainContent.style.transition = "none";
-                            mainContent.style.transform = `translateX(${-diffX}px)`;
                         }
                     }
                 }
@@ -79,9 +71,6 @@ export default function Navbar() {
             const diffX = touchStartX - touchEndX;
 
             // Reset inline tracking styles so transitions take over again
-            if (mainContent) {
-                mainContent.style.transition = "transform 0.3s ease-in-out"; mainContent.style.transform = "";
-            }
             if (sidebar) {
                 sidebar.style.transition = ""; sidebar.style.transform = "";
             }
@@ -89,21 +78,14 @@ export default function Navbar() {
             // Perform navigation if threshold is crossed
             if (isHorizontalSwipe && Math.abs(diffX) > 50) {
                 if (isSidebarOpenAtStart) {
-                    // Close the sidebar instead of switching tabs
-                    window.dispatchEvent(new Event("close-sidebar"));
-                } else {
                     if (diffX > 0) {
-                        // Swiped Left: Move to the next tab
-                        if (activeTab < tabs.length - 1) {
-                            navigate(tabs[activeTab + 1].route);
-                        }
-                    } else {
-                        // Swiped Right: Move to the previous tab | Open the sidebar (on NewsFeed)
-                        if (activeTab > 0) {
-                            navigate(tabs[activeTab - 1].route);
-                        } else if (activeTab === 0) {
-                            window.dispatchEvent(new Event("open-sidebar"));
-                        }
+                        // Swiped Left: Close the sidebar
+                        window.dispatchEvent(new Event("close-sidebar"));
+                    }
+                } else {
+                    if (diffX < 0) {
+                        // Swiped Right: Open the sidebar from any tab
+                        window.dispatchEvent(new Event("open-sidebar"));
                     }
                 }
             }
@@ -119,7 +101,7 @@ export default function Navbar() {
             window.removeEventListener("touchmove", handleTouchMove);
             window.removeEventListener("touchend", handleTouchEnd);
         };
-    }, [activeTab, navigate]);
+    }, []);
 
     return (
         <nav
