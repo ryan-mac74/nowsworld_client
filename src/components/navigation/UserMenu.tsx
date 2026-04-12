@@ -80,9 +80,7 @@ export default function UserMenu({
                 <DropdownMenuSeparator />
 
                 <DropdownMenuItem variant="info" asChild>
-                    <LoginDialog
-                        className={className}
-                    />
+                    <LoginDialog className={className} />
                 </DropdownMenuItem>
 
                 <DropdownMenuItem variant="warning" asChild>

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { MessageSquare, Mail, Phone } from "lucide-react";
 import useCustomToast from "@/hooks/useCustomToast";
 import Button from "@/components/ui/Button";
+import PopupLink from "@/components/ui/PopupLink";
 
 type SidebarProps = {
     isOpen?: boolean;
@@ -65,11 +66,6 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
             setIsSubmittingFeedback(false);
         }
     };
-
-    const width = Math.round(window.screen.width * 0.8);
-    const height = Math.round(window.screen.height * 0.8);
-    const left = Math.round((window.screen.width - width) / 2);
-    const top = Math.round((window.screen.height - height) / 2);
 
     const baseClasses = "w-3/4 max-w-lg h-screen flex flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 overflow-y-auto";
     const overlayClasses = `fixed top-0 left-0 z-50 shadow-2xl transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"}`;
@@ -204,40 +200,12 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                     <div className="flex flex-col gap-1.5">
                         {/* Legal Links */}
                         <div className="flex flex-wrap justify-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
-                            <a
-                                onClick={(e) => {
-                                    e.preventDefault();
-
-                                    window.open(
-                                        "/terms-of-service",
-                                        "popup",
-                                        `toolbar=no,scrollbars=yes,resizable=yes,top=${top},left=${left},width=${width},height=${height}`
-                                    );
-                                }}
-                                className="
-                                    hover:text-neutral-900 dark:hover:text-neutral-200 transition
-                                    hover:underline break-all cursor-pointer
-                                "
-                            >
+                            <PopupLink href="/terms-of-service">
                                 Terms of Service
-                            </a>
-                            <a
-                                onClick={(e) => {
-                                    e.preventDefault();
-
-                                    window.open(
-                                        "/privacy-policy",
-                                        "popup",
-                                        `toolbar=no,scrollbars=yes,resizable=yes,top=${top},left=${left},width=${width},height=${height}`
-                                    );
-                                }}
-                                className="
-                                    hover:text-neutral-900 dark:hover:text-neutral-200 transition
-                                    hover:underline break-all cursor-pointer
-                                "
-                            >
+                            </PopupLink>
+                            <PopupLink href="/privacy-policy">
                                 Privacy Policy
-                            </a>
+                            </PopupLink>
                         </div>
 
                         {/* Copyright */}

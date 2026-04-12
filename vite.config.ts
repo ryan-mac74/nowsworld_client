@@ -16,10 +16,11 @@ export default defineConfig(({ mode }) => {
         manifest: {
           name: "NowSWorld <NSW>",
           short_name: "NowSWorld",
-          description: "Social Media App",
+          description: "Social Media PWA",
           theme_color: "#000000",
           background_color: "#ffffff",
           display: "standalone",
+          orientation: "portrait",
           start_url: "/",
           icons: [
             {

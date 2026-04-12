@@ -118,9 +118,7 @@ export default function AppHeader({
                             className={menuItemClass}
                         />
                     ) : (
-                        <LoginDialog
-                            className={menuItemClass}
-                        />
+                        <LoginDialog className={menuItemClass} />
                     )}
                 </div>
             </div>
