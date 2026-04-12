@@ -36,8 +36,8 @@ export default defineConfig(({ mode }) => {
         },
 
         workbox: {
-          // Exclude API routes from SPA fallback to not returning HTML instead of JSON
-          navigateFallbackDenylist: [/^\/api/],
+          // Exclude API routes and static images/assets from SPA fallback
+          navigateFallbackDenylist: [/^\/api/, /^\/.*\.(png|jpg|jpeg|svg|gif|webp|ico|txt)$/i],
           runtimeCaching: [
             {
               urlPattern: ({ url }) => url.pathname.startsWith("/api/public"),
