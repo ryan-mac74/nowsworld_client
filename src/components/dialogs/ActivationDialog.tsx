@@ -11,12 +11,7 @@ type ActivationDialogProps = {
   onConfirm?: () => void;
 };
 
-export default function ActivationDialog({
-  className,
-  action,
-  deletedAt,
-  onConfirm,
-}: ActivationDialogProps) {
+export default function ActivationDialog({ className, action, deletedAt, onConfirm }: ActivationDialogProps) {
   const [open, setOpen] = useState(false);
 
   const handleAction = async () => {

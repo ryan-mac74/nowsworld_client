@@ -8,12 +8,7 @@ type StatusDialogProps = {
   onRetry?: () => void;
 };
 
-export default function StatusDialog({
-  type,
-  title,
-  message,
-  onRetry,
-}: StatusDialogProps) {
+export default function StatusDialog({ type, title, message, onRetry }: StatusDialogProps) {
   const iconData = {
     loading: (
       <div className="h-10 w-10 animate-spin rounded-full border-4 border-neutral-200 dark:border-neutral-600 border-t-blue-600 dark:border-t-blue-400" />

@@ -4,15 +4,16 @@ import { FaFacebook } from "react-icons/fa";
 import { LinkIcon, LogIn, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import MenuIcon from "@/components/ui/MenuIcon";
-import type { UserPublic } from "@/hooks/useAuth";
 import { headerButtonClass } from "@/components/layout/AppHeader";
+import useAuth from "@/hooks/useAuth";
 
 type LoginDialogProps = {
-  user?: UserPublic | null;
   className?: string;
 };
 
-export default function LoginDialog({ user, className }: LoginDialogProps) {
+export default function LoginDialog({ className }: LoginDialogProps) {
+  const { isAuthenticated } = useAuth();
+
   const VITE_API_URL =
     import.meta.env.VITE_API_URL ||
     "http://localhost:3000/api";
@@ -33,19 +34,18 @@ export default function LoginDialog({ user, className }: LoginDialogProps) {
     mr-0.5
   `;
 
-  const isLoggedIn = !!user;
-  const actionIcon = isLoggedIn ? LinkIcon : LogIn;
-  const triggerClass = isLoggedIn ? className : loginButtonClass;
+  const actionIcon = isAuthenticated ? LinkIcon : LogIn;
+  const triggerClass = isAuthenticated ? className : loginButtonClass;
 
-  const actionLabel = isLoggedIn
+  const actionLabel = isAuthenticated
     ? "Link Account"
     : "Log In";
 
-  const actionTitle = isLoggedIn
+  const actionTitle = isAuthenticated
     ? "Link a new account"
     : "Log in to your account";
 
-  const description = isLoggedIn
+  const description = isAuthenticated
     ? "Connect another profile from any of the providers below to your account for more log in flexibility"
     : "Choose an account from any of the providers below for starters, then link another profile later";
 

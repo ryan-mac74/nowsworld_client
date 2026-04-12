@@ -1,16 +1,19 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import NewsFeedSkeleton from "@/components/skeleton/NewsFeedSkeleton";
 import NewsFeed from "@/components/layout/NewsFeed";
 import type { User } from "@/components/layout/NewsFeed";
 import Button from "@/components/ui/Button";
+import useAuth from "@/hooks/useAuth";
 
 export default function Home() {
+  const { isAuthenticated } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const VITE_API_URL =
     import.meta.env.VITE_API_URL ||
@@ -20,7 +23,9 @@ export default function Home() {
   const postLimit = Number(import.meta.env.VITE_POST_LIMIT) || 10;
 
   const fetchUsersRequest = async (pageToFetch: number) => {
-    const res = await fetch(`${VITE_API_URL}/users?page=${pageToFetch}&userLimit=${userLimit}&postLimit=${postLimit}`, {
+    const endpoint = isAuthenticated ? "/private/feed" : "/public/feed";
+
+    const res = await fetch(`${VITE_API_URL}${endpoint}?page=${pageToFetch}&userLimit=${userLimit}&postLimit=${postLimit}`, {
       credentials: "include",
     });
 
@@ -31,29 +36,20 @@ export default function Home() {
     return res.json() as Promise<User[]>;
   };
 
-  const refetchUsers = async () => {
-    setLoading(true);
+  const refetchUsers = useCallback(() => {
+    setUsers([]);
     setError(null);
+    setPage(1);
     setHasMore(true);
+    setRefreshKey((prev) => prev + 1);
+  }, []);
 
-    try {
-      // Refetch 1st page of users
-      const data = await fetchUsersRequest(1);
-
-      setUsers(data);
-      setPage(1);
-
-      if (data.length < userLimit) {
-        // No more users to load
-        setHasMore(false);
-      }
-    } catch (error) {
-      console.error(error);
-      setError("❌ Failed to refresh users");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Refetch users when authentication status changes
+  const [prevAuth, setPrevAuth] = useState(isAuthenticated);
+  if (isAuthenticated !== prevAuth) {
+    setPrevAuth(isAuthenticated);
+    refetchUsers();
+  }
 
   // Fetch users for a page
   useEffect(() => {
@@ -67,13 +63,24 @@ export default function Home() {
 
     const fetchUsers = async () => {
       setLoading(true);
+      setError(null);
 
       try {
         const data = await fetchUsersRequest(page);
 
         if (!ignore) {
-          // Append new users to the list
-          setUsers(prev => [...prev, ...data]);
+          if (page === 1) {
+            setUsers(data);
+          } else {
+            // Only add new users not in the list yet
+            setUsers((prev) => {
+              const newUsers = data.filter(
+                (newUser) => !prev.some((existing) => existing.id === newUser.id)
+              );
+
+              return [...prev, ...newUsers];
+            });
+          }
 
           if (data.length < userLimit) {
             // No more users to load
@@ -85,7 +92,8 @@ export default function Home() {
       } catch (error) {
         if (!ignore) {
           console.error(error);
-          setError("❌ Failed to load users");
+          setError(page === 1 ? "❌ Failed to refresh users" : "❌ Failed to load users");
+
           setLoading(false);
         }
       }
@@ -96,7 +104,7 @@ export default function Home() {
     return () => {
       ignore = true;
     };
-  }, [page]);
+  }, [page, refreshKey]);
 
   // Infinite scroll observer
   useEffect(() => {

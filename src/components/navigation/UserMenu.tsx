@@ -81,7 +81,6 @@ export default function UserMenu({
 
                 <DropdownMenuItem variant="info" asChild>
                     <LoginDialog
-                        user={user}
                         className={className}
                     />
                 </DropdownMenuItem>

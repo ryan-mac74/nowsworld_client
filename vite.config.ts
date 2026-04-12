@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
         registerType: "prompt",
 
         manifest: {
-          name: "NowSWorld <NWS>",
+          name: "NowSWorld <NSW>",
           short_name: "NowSWorld",
           description: "Social Media App",
           theme_color: "#000000",
@@ -36,17 +36,17 @@ export default defineConfig(({ mode }) => {
         },
 
         workbox: {
+          // Exclude API routes from SPA fallback to not returning HTML instead of JSON
+          navigateFallbackDenylist: [/^\/api/],
           runtimeCaching: [
             {
-              // Cache API requests to enable 
-              // offline functionality
-              urlPattern: /\/api\/.*/,
-              handler: "NetworkFirst",
+              urlPattern: ({ url }) => url.pathname.startsWith("/api/public"),
+              handler: "StaleWhileRevalidate",
               options: {
-                cacheName: "api-cache",
+                cacheName: "api-public-cache",
                 expiration: {
                   maxEntries: 50,
-                  maxAgeSeconds: 60 * 60 * 24, // 1 day
+                  maxAgeSeconds: 60 * 60, // 1 hour
                 },
               },
             },

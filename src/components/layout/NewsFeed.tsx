@@ -104,13 +104,11 @@ export default function NewsFeed({ users }: NewsFeedProps) {
                                             rounded p-4 bg-neutral-100 dark:bg-neutral-900
                                         "
                                     >
-                                        <div className="flex justify-center items-center">
+                                        <div className="flex justify-center items-center gap-2">
                                             <span className="text-xs text-neutral-500">
                                                 {new Date(post.createdAt).toLocaleString()}
                                             </span>
 
-                                            {/* TODO
-                                            
                                             {!post.published && (
                                                 <span
                                                     className="
@@ -121,8 +119,6 @@ export default function NewsFeed({ users }: NewsFeedProps) {
                                                     Draft
                                                 </span>
                                             )}
-                                            
-                                            */}
                                         </div>
 
                                         <p className="text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap mt-2">

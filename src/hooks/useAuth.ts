@@ -215,6 +215,7 @@ export default function useAuth() {
 
   return {
     user,
+    isAuthenticated: !!user,
     isLoading,
     logout,
     refetchMe: fetchMe,

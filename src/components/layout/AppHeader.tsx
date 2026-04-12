@@ -119,7 +119,6 @@ export default function AppHeader({
                         />
                     ) : (
                         <LoginDialog
-                            user={user}
                             className={menuItemClass}
                         />
                     )}
