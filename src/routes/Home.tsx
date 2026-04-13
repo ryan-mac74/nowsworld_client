@@ -13,7 +13,6 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const VITE_API_URL =
     import.meta.env.VITE_API_URL ||
@@ -25,9 +24,12 @@ export default function Home() {
   const fetchUsersRequest = async (pageToFetch: number) => {
     const endpoint = isAuthenticated ? "/private/feed" : "/public/feed";
 
-    const res = await fetch(`${VITE_API_URL}${endpoint}?page=${pageToFetch}&userLimit=${userLimit}&postLimit=${postLimit}`, {
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${VITE_API_URL}${endpoint}?page=${pageToFetch}&userLimit=${userLimit}&postLimit=${postLimit}`,
+      {
+        credentials: "include",
+      }
+    );
 
     if (!res.ok) {
       throw new Error(`❌ HTTP ${res.status}`);
@@ -41,25 +43,15 @@ export default function Home() {
     setError(null);
     setPage(1);
     setHasMore(true);
-    setRefreshKey((prev) => prev + 1);
   }, []);
-
-  // Refetch users when authentication status changes
-  const [prevAuth, setPrevAuth] = useState(isAuthenticated);
-  if (isAuthenticated !== prevAuth) {
-    setPrevAuth(isAuthenticated);
-    refetchUsers();
-  }
 
   // Fetch users for a page
   useEffect(() => {
-    if (!hasMore) {
+    if (isAuthenticated === null) {
       return;
     }
 
-    // Prevent state updates on unmounted component
-    // by React Strict Mode
-    let ignore = false;
+    let ignore = false; // to prevent state updates on unmounted component (React Strict Mode)
 
     const fetchUsers = async () => {
       setLoading(true);
@@ -71,6 +63,7 @@ export default function Home() {
         if (!ignore) {
           if (page === 1) {
             setUsers(data);
+            setHasMore(true);
           } else {
             // Only add new users not in the list yet
             setUsers((prev) => {
@@ -92,8 +85,13 @@ export default function Home() {
       } catch (error) {
         if (!ignore) {
           console.error(error);
-          setError(page === 1 ? "❌ Failed to refresh users" : "❌ Failed to load users");
-
+          setError(
+            (page === 1) ? (
+              "❌ Failed to refresh users"
+            ) : (
+              "❌ Failed to load users"
+            )
+          );
           setLoading(false);
         }
       }
@@ -104,7 +102,7 @@ export default function Home() {
     return () => {
       ignore = true;
     };
-  }, [page, refreshKey]);
+  }, [page, isAuthenticated]);
 
   // Infinite scroll observer
   useEffect(() => {
@@ -138,7 +136,7 @@ export default function Home() {
 
     // Cleanup listener on unmount
     return () => window.removeEventListener("refetch-feed", handleRefetch);
-  }, []);
+  }, [refetchUsers]);
 
   return (
     <main className="w-full flex-1 flex flex-col items-center gap-4 pt-2 pb-2">
@@ -205,7 +203,10 @@ export default function Home() {
       )}
 
       {!error && hasMore && !loading && (
-        <div ref={loaderRef} className="h-4 w-full flex justify-center items-center">
+        <div
+          ref={loaderRef}
+          className="h-4 w-full flex justify-center items-center"
+        >
           <span className="text-neutral-500 dark:text-neutral-400">
             Scroll to load more
           </span>
