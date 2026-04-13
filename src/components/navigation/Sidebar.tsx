@@ -182,7 +182,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                             href={VITE_WHATSAPP_URL}
                             target="_blank" rel="noreferrer"
                             className="
-                                text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition
+                                text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition
                             "
                         >
                             <Phone size={18} />
@@ -190,7 +190,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                         <a
                             href={`mailto:${VITE_CONTACT_EMAIL}`}
                             className="
-                                text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300 transition truncate
+                                text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition truncate text-sm
                             "
                         >
                             {VITE_CONTACT_EMAIL}
@@ -205,6 +205,9 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                             </PopupLink>
                             <PopupLink href="/privacy-policy">
                                 Privacy Policy
+                            </PopupLink>
+                            <PopupLink href="/data-deletion">
+                                Data Deletion
                             </PopupLink>
                         </div>
 

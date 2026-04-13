@@ -8,6 +8,9 @@ import Chat from "@/routes/Chat";
 import Search from "@/routes/Search";
 import Notification from "@/routes/Notification";
 import Profile from "@/routes/Profile";
+import TermsOfService from "@/routes/TermsOfService";
+import PrivacyPolicy from "@/routes/PrivacyPolicy";
+import DataDeletion from "@/routes/DataDeletion";
 import { Toaster } from "sonner";
 import usePWA from "@/hooks/usePWA";
 
@@ -27,6 +30,9 @@ export default function App() {
           <Route path="/notification" element={<Notification />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/data-deletion" element={<DataDeletion />} />
       </Routes>
     </>
   )

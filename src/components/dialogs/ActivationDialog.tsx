@@ -50,7 +50,7 @@ export default function ActivationDialog({ className, action, deletedAt, onConfi
       actionIcon = Trash2;
       actionLabel = "Delete Account";
       actionTitle = "Delete your account";
-      description = "Your account will be permanently deleted within 4+ weeks. Reactivate it to prevent permanent deletion";
+      description = "Your account will be permanently deleted within 5-25 business days. Reactivate it to prevent permanent deletion";
       actionButtonClass = "bg-red-600 dark:bg-red-700 text-white hover:bg-red-800";
       break;
   }
