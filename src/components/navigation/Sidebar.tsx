@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { MessageSquare, Mail, Phone } from "lucide-react";
+import { MessageSquare, Mail, Phone, Megaphone, Bell } from "lucide-react";
 import useCustomToast from "@/hooks/useCustomToast";
+import useAuth from "@/hooks/useAuth";
 import Button from "@/components/ui/Button";
 import PopupLink from "@/components/ui/PopupLink";
+import { urlBase64ToUint8Array } from "@/utils/base64";
 
 type SidebarProps = {
     isOpen?: boolean;
@@ -30,9 +32,60 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
         import.meta.env.VITE_API_URL ||
         "http://localhost:3000/api";
 
+    const VITE_VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY!;
+
+    const { user } = useAuth();
     const [feedbackMessage, setFeedbackMessage] = useState("");
     const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+    const [updateContent, setUpdateContent] = useState("");
+    const [isSubmittingUpdate, setIsSubmittingUpdate] = useState(false);
     const { showSuccessToast, showErrorToast } = useCustomToast();
+    const [isSubscribed, setIsSubscribed] = useState(false);
+
+    useEffect(() => {
+        // Check if push notifications are supported and user is already subscribed
+        if ("serviceWorker" in navigator && "PushManager" in window) {
+            navigator.serviceWorker.ready.then((registration) => {
+                registration.pushManager.getSubscription().then((sub) => {
+                    setIsSubscribed(!!sub);
+                });
+            });
+        }
+    }, []);
+
+    const handleUpdateSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!updateContent.trim()) {
+            return;
+        }
+
+        setIsSubmittingUpdate(true);
+
+        try {
+            const res = await fetch(`${VITE_API_URL}/updates/publish`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                // Send update content & Flag backend to send push notifications to all devices
+                body: JSON.stringify({ content: updateContent, notifyAll: true }),
+                credentials: "include",
+            });
+
+            if (!res.ok) {
+                throw new Error(`❌ HTTP ${res.status}`);
+            }
+
+            setUpdateContent("");
+            showSuccessToast("Update published & Notifications sent");
+        } catch (error) {
+            console.error("❌ Failed to publish update:", error);
+            showErrorToast("Failed to publish update -- Please try again");
+        } finally {
+            setIsSubmittingUpdate(false);
+        }
+    };
 
     const handleFeedbackSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -54,7 +107,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
             });
 
             if (!res.ok) {
-                throw new Error(`HTTP ${res.status}`);
+                throw new Error(`❌ HTTP ${res.status}`);
             }
 
             setFeedbackMessage("");
@@ -64,6 +117,71 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
             showErrorToast("Failed to send feedback -- Please try again");
         } finally {
             setIsSubmittingFeedback(false);
+        }
+    };
+
+    const handleEnablePush = async () => {
+        if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
+            showErrorToast("Push Notifications are not supported by your browser");
+            return;
+        }
+
+        try {
+            if (Notification.permission === "denied") {
+                showErrorToast("Notifications are denied -- Please enable now for real-time updates");
+                return;
+            }
+
+            const permission = await Notification.requestPermission();
+            if (permission !== "granted") {
+                showErrorToast("Notification permission was not granted");
+                return;
+            }
+
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(VITE_VAPID_PUBLIC_KEY),
+            });
+
+            // Send subscription object to the backend for later use when sending Push Notifications
+            await fetch(`${VITE_API_URL}/notifications/subscribe`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(subscription),
+                credentials: "include",
+            });
+
+            setIsSubscribed(true);
+            showSuccessToast("Successfully subscribed to Push Notifications for real-time updates");
+        } catch (error) {
+            console.error("❌ Failed to subscribe to Push Notifications:", error);
+            showErrorToast("Failed to enable Push Notifications");
+        }
+    };
+
+    const handleDisablePush = async () => {
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.getSubscription();
+
+            if (subscription) {
+                // Inform the backend to delete this subscription from the DB
+                await fetch(`${VITE_API_URL}/notifications/unsubscribe`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ endpoint: subscription.endpoint }),
+                    credentials: "include",
+                });
+
+                await subscription.unsubscribe();
+
+                setIsSubscribed(false);
+                showSuccessToast("Successfully unsubscribed from Push Notifications for real-time updates");
+            }
+        } catch (error) {
+            console.error("❌ Failed to unsubscribe from Push Notifications:", error);
+            showErrorToast("Failed to disable Push Notifications for real-time updates");
         }
     };
 
@@ -101,12 +219,78 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
 
                 */}
 
+                {/* Push Notifications Sub */}
+                <div className="mb-6">
+                    <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-2">
+                        <Bell size={16} />
+                        App Notifications
+                    </h3>
+
+                    {isSubscribed ? (
+                        <Button
+                            onClick={handleDisablePush}
+                            className="
+                                w-full mt-1 text-sm font-medium rounded-md shadow-sm transition-colors 
+                                text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600
+                            "
+                        >
+                            Disable Push Notifications
+                        </Button>
+                    ) : (
+                        <Button
+                            onClick={handleEnablePush}
+                            className="
+                                w-full mt-1 text-sm font-medium rounded-md shadow-sm transition-colors 
+                                text-white bg-neutral-800 hover:bg-neutral-900 dark:bg-neutral-700 dark:hover:bg-neutral-600
+                            "
+                        >
+                            Enable Push Notifications
+                        </Button>
+                    )}
+                </div>
+
+                {/* Update Announcement */}
+                {user?.is_superuser && (
+                    <div className="mb-6">
+                        <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-2">
+                            <Megaphone size={16} />
+                            New Update
+                        </h3>
+                        <form className="flex flex-col gap-2" onSubmit={handleUpdateSubmit}>
+                            <textarea
+                                value={updateContent}
+                                onChange={(e) => setUpdateContent(e.target.value)}
+                                disabled={isSubmittingUpdate}
+                                placeholder="Write a new update & Notify all users..."
+                                className="
+                                    w-full text-base md:text-sm p-2 rounded-md border 
+                                    border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 
+                                    text-neutral-900 dark:text-neutral-100 resize-none outline-none 
+                                    focus:ring-2 focus:ring-green-500 transition-shadow disabled:opacity-50
+                                "
+                                rows={4}
+                            />
+
+                            <Button
+                                disabled={isSubmittingUpdate || !updateContent.trim()} type="submit"
+                                className="
+                                    w-full mt-1 text-sm font-medium text-white bg-green-600 hover:bg-green-700 
+                                    rounded-md shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                                "
+                            >
+                                {isSubmittingUpdate ? "Publishing..." : "Publish & Notify"}
+                            </Button>
+                        </form>
+                    </div>
+                )}
+
                 {/* Feedback Message */}
                 <div className="mb-6">
                     <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-2">
                         <MessageSquare size={16} />
                         Feedback
                     </h3>
+
                     <form className="flex flex-col gap-2" onSubmit={handleFeedbackSubmit}>
                         <textarea
                             value={feedbackMessage}
@@ -121,6 +305,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                             "
                             rows={4}
                         />
+
                         <Button
                             disabled={isSubmittingFeedback || !feedbackMessage.trim()} type="submit"
                             className="
@@ -134,11 +319,12 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                 </div>
 
                 {/* Newsletter Subscription */}
-                <div className="mb-8">
+                <div className="mb-6">
                     <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-2">
                         <Mail size={16} />
                         Newsletter
                     </h3>
+
                     <form className="flex flex-col gap-2" onSubmit={(e) => e.preventDefault()}>
                         <input
                             disabled
@@ -150,6 +336,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                                 outline-none focus:ring-2 focus:ring-blue-500 transition-shadow
                             "
                         />
+
                         <Button
                             disabled
                             type="submit"
@@ -164,7 +351,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                 </div>
 
                 {/* Footer Section */}
-                <div className="p-4 border-t border-neutral-200 dark:border-neutral-800 flex flex-col gap-4">
+                <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 flex flex-col gap-4">
                     {/* Contact Info */}
                     <div className="flex items-center justify-center gap-4">
                         {/* TODO
@@ -187,6 +374,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                         >
                             <Phone size={18} />
                         </a>
+
                         <a
                             href={`mailto:${VITE_CONTACT_EMAIL}`}
                             className="

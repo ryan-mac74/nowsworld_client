@@ -85,6 +85,7 @@ export default function Home() {
       } catch (error) {
         if (!ignore) {
           console.error(error);
+
           setError(
             (page === 1) ? (
               "❌ Failed to refresh users"
@@ -92,6 +93,7 @@ export default function Home() {
               "❌ Failed to load users"
             )
           );
+
           setLoading(false);
         }
       }

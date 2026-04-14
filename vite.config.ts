@@ -13,6 +13,12 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: "prompt",
 
+        // Enable Service Worker in dev
+        devOptions: {
+          enabled: true,
+          type: "module",
+        },
+
         manifest: {
           name: "NowSWorld <NSW>",
           short_name: "NowSWorld",
@@ -37,6 +43,11 @@ export default defineConfig(({ mode }) => {
         },
 
         workbox: {
+          // Inject custom Service Worker script
+          importScripts: ["/custom-sw.js"],
+          clientsClaim: true,
+          skipWaiting: true,
+
           // Exclude API routes and static images/assets from SPA fallback
           navigateFallbackDenylist: [/^\/api/, /^\/.*\.(png|jpg|jpeg|svg|gif|webp|ico|txt)$/i],
           runtimeCaching: [
