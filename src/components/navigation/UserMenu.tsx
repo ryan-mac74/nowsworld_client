@@ -12,7 +12,7 @@ import {
 import Button from "@/components/ui/Button";
 import Avatar from "@/components/ui/Avatar";
 import MenuIcon from "@/components/ui/MenuIcon";
-import type { UserPublic } from "@/hooks/useAuth";
+import type { UserPublic } from "@/types/user";
 import { User, Settings, Clock } from "lucide-react";
 
 const menuItems = [

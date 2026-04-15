@@ -1,28 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useCustomToast from "@/hooks/useCustomToast";
-
-export type UserPublic = {
-  id: number;
-  email: string;
-  username: string;
-  name: string;
-  bio?: string;
-  avatar?: string;
-  address?: string;
-  gender?: string;
-  dateOfBirth?: string;
-  deletedAt?: string;
-  is_active: boolean;
-  is_verified: boolean;
-  is_superuser: boolean;
-};
-
-export type UserRegister = {
-  email: string;
-  username: string;
-  name: string;
-};
+import type { UserPublic } from "@/types/user";
 
 export default function useAuth() {
   const navigate = useNavigate();

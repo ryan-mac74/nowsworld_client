@@ -5,7 +5,7 @@ import Brand from "@/components/ui/Brand";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import LoginDialog from "@/components/dialogs/LoginDialog";
 import UserMenu from "@/components/navigation/UserMenu";
-import type { UserPublic } from "@/hooks/useAuth";
+import type { UserPublic } from "@/types/user";
 import { Menu } from "lucide-react";
 import Sidebar from "@/components/navigation/Sidebar";
 
@@ -79,7 +79,9 @@ export default function AppHeader({
                     </Button>
 
                     <Button disabled className={`${headerButtonClass} uppercase`} aria-label="Change Language">
-                        <span>EN</span>
+                        <span>FR</span>
+
+                        {/* TODO: EN Language Toggle */}
                     </Button>
                 </div>
 

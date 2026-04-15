@@ -21,7 +21,7 @@ export default function Home() {
   const userLimit = Number(import.meta.env.VITE_USER_LIMIT) || 5;
   const postLimit = Number(import.meta.env.VITE_POST_LIMIT) || 10;
 
-  const fetchUsersRequest = async (pageToFetch: number) => {
+  const fetchFeedRequest = async (pageToFetch: number) => {
     const endpoint = isAuthenticated ? "/private/feed" : "/public/feed";
 
     const res = await fetch(
@@ -38,7 +38,7 @@ export default function Home() {
     return res.json() as Promise<User[]>;
   };
 
-  const refetchUsers = useCallback(() => {
+  const refetchFeed = useCallback(() => {
     setUsers([]);
     setError(null);
     setPage(1);
@@ -53,12 +53,12 @@ export default function Home() {
 
     let ignore = false; // to prevent state updates on unmounted component (React Strict Mode)
 
-    const fetchUsers = async () => {
+    const fetchFeed = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const data = await fetchUsersRequest(page);
+        const data = await fetchFeedRequest(page);
 
         if (!ignore) {
           if (page === 1) {
@@ -99,7 +99,7 @@ export default function Home() {
       }
     };
 
-    fetchUsers();
+    fetchFeed();
 
     return () => {
       ignore = true;
@@ -133,12 +133,12 @@ export default function Home() {
 
   // Listen for manual refetch triggers
   useEffect(() => {
-    const handleRefetch = () => refetchUsers();
+    const handleRefetch = () => refetchFeed();
     window.addEventListener("refetch-feed", handleRefetch);
 
     // Cleanup listener on unmount
     return () => window.removeEventListener("refetch-feed", handleRefetch);
-  }, [refetchUsers]);
+  }, [refetchFeed]);
 
   return (
     <main className="w-full flex-1 flex flex-col items-center gap-4 pt-2 pb-2">
@@ -162,7 +162,7 @@ export default function Home() {
             </p>
 
             <Button
-              onClick={refetchUsers}
+              onClick={refetchFeed}
               className="
                 bg-red-600 hover:bg-red-700 text-white 
                 mt-2 active:scale-95

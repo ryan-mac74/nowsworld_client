@@ -261,7 +261,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                                 value={updateContent}
                                 onChange={(e) => setUpdateContent(e.target.value)}
                                 disabled={isSubmittingUpdate}
-                                placeholder="Write a new update & Notify all users..."
+                                placeholder="Write about the latest updates & Notify all users..."
                                 className="
                                     w-full text-base md:text-sm p-2 rounded-md border 
                                     border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 
@@ -347,6 +347,8 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                         >
                             Subscribe
                         </Button>
+
+                        {/* TODO: Unsubscribe Button */}
                     </form>
                 </div>
 
