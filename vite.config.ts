@@ -45,8 +45,6 @@ export default defineConfig(({ mode }) => {
         workbox: {
           // Inject custom Service Worker script
           importScripts: ["/custom-sw.js"],
-          clientsClaim: true,
-          skipWaiting: true,
 
           // Exclude API routes and static images/assets from SPA fallback
           navigateFallbackDenylist: [/^\/api/, /^\/.*\.(png|jpg|jpeg|svg|gif|webp|ico|txt)$/i],
@@ -69,7 +67,7 @@ export default defineConfig(({ mode }) => {
 
     server: {
       // If in dev => allow all
-      // Else => use domain name
+      // Else => allowed hosts only
       allowedHosts:
         mode === "development"
           ? true
