@@ -58,9 +58,22 @@ export default function NewsFeed({ users }: NewsFeedProps) {
                         <div className="flex items-center justify-center text-center gap-2">
                             <Avatar name={user.name} avatar={user.avatar} />
                             <div className="flex flex-col justify-center items-center gap-0.5">
-                                <span className="text-neutral-900 dark:text-neutral-100 text-2xl font-bold">
-                                    {user.name}
-                                </span>
+                                <div className="flex items-center justify-center gap-2">
+                                    <span className="text-neutral-900 dark:text-neutral-100 text-2xl font-bold">
+                                        {user.name}
+                                    </span>
+
+                                    {!user.is_active && (
+                                        <span
+                                            className="
+                                                text-red-800 dark:text-red-200 bg-red-100 dark:bg-red-800/20 
+                                                px-2 py-0.5 rounded text-xs
+                                            "
+                                        >
+                                            Inactive
+                                        </span>
+                                    )}
+                                </div>
 
                                 {/* TODO
                                 
