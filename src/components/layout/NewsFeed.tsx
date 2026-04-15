@@ -16,7 +16,7 @@ export type Post = {
 
 export type User = {
     id: number;
-    email?: string;
+    email: string;
     username: string;
     name: string;
     bio?: string;

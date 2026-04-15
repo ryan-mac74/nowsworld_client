@@ -97,7 +97,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
         setIsSubmittingFeedback(true);
 
         try {
-            const res = await fetch(`${VITE_API_URL}/feedback`, {
+            const res = await fetch(`${VITE_API_URL}/feedback/send`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
