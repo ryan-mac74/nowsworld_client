@@ -13,15 +13,11 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: "prompt",
 
-        /* TODO: Enable in dev for testing
-        
         // Enable Service Worker in dev
         devOptions: {
           enabled: true,
           type: "module",
         },
-        
-        */
 
         manifest: {
           name: "NowSWorld <NSW>",

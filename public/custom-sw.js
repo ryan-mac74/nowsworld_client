@@ -4,11 +4,9 @@ self.addEventListener("push", (event) => {
     return;
   }
 
-  const VITE_PROJECT_NAME = import.meta.env.VITE_PROJECT_NAME || "NowSWorld";
-
   try {
     const data = event.data.json();
-    const title = data.title || VITE_PROJECT_NAME;
+    const title = data.title || "NowSWorld";
     const options = {
       body: data.body || "You have a New Notification!",
       icon: "/logo-192.png",
