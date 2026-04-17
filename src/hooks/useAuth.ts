@@ -41,6 +41,13 @@ export default function useAuth() {
 
   useEffect(() => {
     fetchMe();
+
+    // Sync logout across all components using this hook
+    const handleLogout = () => setUser(null);
+    window.addEventListener("auth-logout", handleLogout);
+
+    // Cleanup event listener on unmount
+    return () => window.removeEventListener("auth-logout", handleLogout);
   }, [fetchMe]);
 
   const logout = async (toast: boolean = true) => {
@@ -55,6 +62,10 @@ export default function useAuth() {
       }
 
       setUser(null);
+
+      // Notify all instances of this hook to update their state
+      window.dispatchEvent(new Event("auth-logout"));
+
       navigate("/");
 
       if (toast) {

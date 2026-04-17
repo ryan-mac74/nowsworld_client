@@ -1,7 +1,5 @@
 export default function Brand() {
-  const VITE_PROJECT_NAME =
-    import.meta.env.VITE_PROJECT_NAME ||
-    "NowSWorld";
+  const VITE_PROJECT_NAME = import.meta.env.VITE_PROJECT_NAME || "NowSWorld";
 
   return (
     <>

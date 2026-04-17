@@ -130,7 +130,18 @@ export default function Navbar() {
                 return (
                     <button
                         key={tab.id}
-                        onClick={() => navigate(tab.route)}
+                        onClick={(e) => {
+                            if (tab.id === 'feed' && isActive) {
+                                e.preventDefault();
+
+                                // Scroll back to top of the feed page
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                                return;
+                            }
+
+                            navigate(tab.route);
+                        }}
                         className={cn(
                             'flex flex-1 justify-center items-center transition-colors duration-300',
                             `${isActive ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300'}`

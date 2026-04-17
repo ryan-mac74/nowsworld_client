@@ -14,9 +14,7 @@ type SidebarProps = {
 };
 
 export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: SidebarProps) {
-    const VITE_PROJECT_NAME =
-        import.meta.env.VITE_PROJECT_NAME ||
-        "NowSWorld";
+    const VITE_PROJECT_NAME = import.meta.env.VITE_PROJECT_NAME || "NowSWorld";
 
     /* TODO
     
