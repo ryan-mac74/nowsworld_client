@@ -68,6 +68,7 @@ export default function Home() {
     setPage(1);
     setHasMore(true);
     setLoading(true);
+    setRetryCounter((prev) => prev + 1); // to trigger useEffect when "refetch-feed" event occurs
   }, []);
 
   // Reset feed when user logs in or out

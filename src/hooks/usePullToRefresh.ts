@@ -57,7 +57,7 @@ export default function usePullToRefresh() {
                     iconRef.current.style.transform = '';
                 }
 
-                // Trigger global refetch-feed event
+                // Trigger global "refetch-feed" event
                 window.dispatchEvent(new Event("refetch-feed"));
 
                 // Visual delay so user can see the spinner
