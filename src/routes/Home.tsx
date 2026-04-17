@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import NewsFeedSkeleton from "@/components/skeleton/NewsFeedSkeleton";
 import NewsFeed from "@/components/layout/NewsFeed";
 import type { User } from "@/components/layout/NewsFeed";
@@ -15,6 +15,7 @@ let cachedScrollPosition = 0;
 
 export default function Home() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const [users, setUsers] = useState<User[]>(cachedUsers);
   const [loading, setLoading] = useState(cachedUsers.length === 0);
@@ -98,6 +99,8 @@ export default function Home() {
     // and React Router has finished its navigation scroll resets
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
+        // Scroll to the cached scroll position without smooth behavior 
+        // to avoid conflicts with React Router's scroll handling
         window.scrollTo({ top: cachedScrollPosition, behavior: "auto" });
       });
     });
@@ -220,6 +223,21 @@ export default function Home() {
     // Cleanup event listener on unmount
     return () => window.removeEventListener("refetch-feed", handleRefetch);
   }, [refetchFeed]);
+
+  // Handle incoming navigation state
+  useEffect(() => {
+    if (location.state?.fromNav) {
+      // Scroll back to top of the page
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      // Trigger global "refetch-feed" event
+      window.dispatchEvent(new Event("refetch-feed"));
+
+      // Replace the current history entry to prevent going back to the same state
+      // & Clear the state so it doesn't re-trigger on a browser refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   return (
     <main className="w-full flex-1 flex flex-col items-center gap-4 pt-2 pb-2">

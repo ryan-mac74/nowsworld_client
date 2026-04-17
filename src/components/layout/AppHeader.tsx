@@ -88,7 +88,7 @@ export default function AppHeader({
                 {/* Center Section */}
                 <Link
                     to="/"
-                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                    state={{ fromNav: true }} // to mark this navigation as coming from here
                     className="flex items-center gap-0.5 sm:gap-1 no-underline text-inherit"
                 >
                     <Brand />
