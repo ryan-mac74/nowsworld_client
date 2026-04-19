@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { MessageSquare, Mail, Phone, Megaphone, Bell } from "lucide-react";
+import { urlBase64ToUint8Array } from "@/utils/base64";
 import useCustomToast from "@/hooks/useCustomToast";
 import useAuth from "@/hooks/useAuth";
 import Button from "@/components/ui/Button";
 import PopupLink from "@/components/ui/PopupLink";
-import { urlBase64ToUint8Array } from "@/utils/base64";
+import CustomDialog from "@/components/dialogs/CustomDialog";
 
 type SidebarProps = {
     isOpen?: boolean;
@@ -38,6 +39,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
     const [updateContent, setUpdateContent] = useState("");
     const [isSubmittingUpdate, setIsSubmittingUpdate] = useState(false);
     const { showSuccessToast, showErrorToast } = useCustomToast();
+    const [isInstallDialogOpen, setIsInstallDialogOpen] = useState(false);
     const [isSubscribed, setIsSubscribed] = useState(false);
 
     useEffect(() => {
@@ -221,14 +223,33 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                 <div className="mb-6">
                     <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-2">
                         <Bell size={16} />
-                        App Notifications
+                        App Features
                     </h3>
+
+                    <>
+                        <Button
+                            onClick={() => setIsInstallDialogOpen(true)}
+                            className="
+                                w-full text-sm font-medium rounded-md shadow-sm transition-colors 
+                                text-white bg-orange-400 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-400
+                            "
+                        >
+                            Install this App on your Device
+                        </Button>
+
+                        <CustomDialog isOpen={isInstallDialogOpen} onClose={() => setIsInstallDialogOpen(false)}>
+                            <img
+                                src="/PWA.png" alt="PWA Installation Guide"
+                                className="block m-auto max-w-full h-auto rounded-lg shadow-lg"
+                            />
+                        </CustomDialog>
+                    </>
 
                     {isSubscribed ? (
                         <Button
                             onClick={handleDisablePush}
                             className="
-                                w-full mt-1 text-sm font-medium rounded-md shadow-sm transition-colors 
+                                w-full mt-4 text-sm font-medium rounded-md shadow-sm transition-colors 
                                 text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600
                             "
                         >
@@ -238,7 +259,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                         <Button
                             onClick={handleEnablePush}
                             className="
-                                w-full mt-1 text-sm font-medium rounded-md shadow-sm transition-colors 
+                                w-full mt-4 text-sm font-medium rounded-md shadow-sm transition-colors 
                                 text-white bg-neutral-800 hover:bg-neutral-900 dark:bg-neutral-700 dark:hover:bg-neutral-600
                             "
                         >
