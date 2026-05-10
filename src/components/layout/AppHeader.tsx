@@ -8,6 +8,11 @@ import UserMenu from "@/components/navigation/UserMenu";
 import type { UserPublic } from "@/types/user";
 import { Menu } from "lucide-react";
 import Sidebar from "@/components/navigation/Sidebar";
+import type { Update } from "@/components/navigation/Sidebar";
+
+const VITE_API_URL =
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:3000/api";
 
 const menuItemClass = `
     w-full h-8 flex items-center justify-center
@@ -42,21 +47,61 @@ export default function AppHeader({
     activateAccount,
 }: UserMenuProps) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [updates, setUpdates] = useState<Update[]>([]);
 
     useEffect(() => {
+        const fetchUpdates = async () => {
+            try {
+                const res = await fetch(`${VITE_API_URL}/public/updates`, {
+                    credentials: "include",
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    setUpdates(data);
+                }
+            } catch (error) {
+                console.error("❌ Failed to fetch updates:", error);
+            }
+        };
+
+        fetchUpdates();
+
         const handleOpenSidebar = () => setIsSidebarOpen(true);
         const handleCloseSidebar = () => setIsSidebarOpen(false);
 
-        // Listen for events to open/close the sidebar from anywhere
+        // Listen for custom events from anywhere in the app
         window.addEventListener("open-sidebar", handleOpenSidebar);
         window.addEventListener("close-sidebar", handleCloseSidebar);
+        window.addEventListener("refetch-updates", fetchUpdates);
 
         return () => {
             // Clean up event listeners on unmount
             window.removeEventListener("open-sidebar", handleOpenSidebar);
             window.removeEventListener("close-sidebar", handleCloseSidebar);
+            window.removeEventListener("refetch-updates", fetchUpdates);
         };
-    }, []);
+    }, [user]);
+
+    const handleMarkAsViewed = async (id: number) => {
+        try {
+            const res = await fetch(`${VITE_API_URL}/public/updates/${id}/view`, {
+                method: "POST",
+                credentials: "include",
+            });
+
+            if (res.ok) {
+                // Mark unviewed updates as viewed
+                setUpdates((prev) => prev.map((update) => (
+                    (update.id === id) ? { ...update, viewed: true } : update
+                )));
+            }
+        } catch (error) {
+            console.error("❌ Failed to mark update as viewed:", error);
+        }
+    };
+
+    const unviewedUpdatesCount = updates.filter((update) => !update.viewed).length;
 
     return (
         <header
@@ -71,11 +116,19 @@ export default function AppHeader({
                 {/* Left Section */}
                 <div className="flex items-center justify-start gap-2">
                     <Button
-                        className={headerButtonClass}
+                        className={`${headerButtonClass} relative`}
                         aria-label="Open Sidebar"
                         onClick={() => setIsSidebarOpen(true)}
                     >
                         <Menu size={15} />
+                        {unviewedUpdatesCount > 0 && (
+                            <span className="absolute -top-1.5 -left-1.5 h-6 w-6 flex">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                                <span className="relative h-6 w-6 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-sm font-bold">
+                                    {unviewedUpdatesCount}
+                                </span>
+                            </span>
+                        )}
                     </Button>
 
                     <Button disabled className={`${headerButtonClass} uppercase`} aria-label="Change Language">
@@ -129,6 +182,8 @@ export default function AppHeader({
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
                 isOverlay
+                updates={updates}
+                onMarkAsViewed={handleMarkAsViewed}
             />
         </header>
     );

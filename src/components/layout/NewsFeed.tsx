@@ -129,7 +129,7 @@ export default function NewsFeed({ users }: NewsFeedProps) {
                                                         px-2 py-0.5 rounded text-xs
                                                     "
                                                 >
-                                                    Draft
+                                                    DRAFT
                                                 </span>
                                             )}
                                         </div>

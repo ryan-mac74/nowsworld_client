@@ -1,20 +1,32 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { MessageSquare, Mail, Phone, Megaphone, Bell } from "lucide-react";
+import { MessageSquare, Mail, Phone, Megaphone, Bell, Sparkles } from "lucide-react";
 import { urlBase64ToUint8Array } from "@/utils/base64";
 import useCustomToast from "@/hooks/useCustomToast";
 import useAuth from "@/hooks/useAuth";
 import Button from "@/components/ui/Button";
 import PopupLink from "@/components/ui/PopupLink";
 import CustomDialog from "@/components/dialogs/CustomDialog";
+import renderContentWithLinks from "@/utils/renderLinks";
+import { cn } from "@/lib/tailwind-merge";
+
+export type Update = {
+    id: number;
+    content: string;
+    published: boolean;
+    createdAt: string;
+    viewed: boolean;
+};
 
 type SidebarProps = {
     isOpen?: boolean;
     onClose?: () => void;
     isOverlay?: boolean;
+    updates?: Update[];
+    onMarkAsViewed?: (id: number) => void;
 };
 
-export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: SidebarProps) {
+export default function Sidebar({ isOpen = false, onClose, isOverlay = false, updates = [], onMarkAsViewed }: SidebarProps) {
     const VITE_PROJECT_NAME = import.meta.env.VITE_PROJECT_NAME || "NowSWorld";
 
     /* TODO
@@ -41,6 +53,11 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
     const { showSuccessToast, showErrorToast } = useCustomToast();
     const [isInstallDialogOpen, setIsInstallDialogOpen] = useState(false);
     const [isSubscribed, setIsSubscribed] = useState(false);
+    const [showAllUpdates, setShowAllUpdates] = useState(false);
+    const [selectedUpdate, setSelectedUpdate] = useState<Update | null>(null);
+
+    const shownUpdatesCount = 2;
+    const displayedUpdates = showAllUpdates ? updates : updates.slice(0, shownUpdatesCount);
 
     useEffect(() => {
         // Check if push notifications are supported and user is already subscribed
@@ -63,13 +80,14 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
         setIsSubmittingUpdate(true);
 
         try {
-            const res = await fetch(`${VITE_API_URL}/updates/publish`, {
+            const res = await fetch(`${VITE_API_URL}/private/updates/publish`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                // Send update content & Flag backend to send push notifications to all devices
-                body: JSON.stringify({ content: updateContent, notifyAll: true }),
+
+                // Save the update as a draft
+                body: JSON.stringify({ content: updateContent }),
                 credentials: "include",
             });
 
@@ -78,12 +96,39 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
             }
 
             setUpdateContent("");
-            showSuccessToast("Update published & Notifications sent");
+            showSuccessToast("Draft saved successfully");
+            window.dispatchEvent(new Event("refetch-updates"));
         } catch (error) {
-            console.error("❌ Failed to publish update:", error);
-            showErrorToast("Failed to publish update -- Please try again");
+            console.error("❌ Failed to save draft:", error);
+            showErrorToast("Failed to save draft -- Please try again");
         } finally {
             setIsSubmittingUpdate(false);
+        }
+    };
+
+    const handlePublishUpdate = async (e: React.MouseEvent, id: number) => {
+        e.stopPropagation(); // Prevent the update from also being marked as "viewed" when clicked
+
+        try {
+            // Use "PATCH" to update the existing draft and publish it
+            const res = await fetch(`${VITE_API_URL}/private/updates/${id}/publish`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ notifyAll: true }),
+                credentials: "include",
+            });
+
+            if (!res.ok) {
+                throw new Error(`❌ HTTP ${res.status}`);
+            }
+
+            showSuccessToast("Draft published & Notifications sent");
+            window.dispatchEvent(new Event("refetch-updates"));
+        } catch (error) {
+            console.error("❌ Failed to publish draft:", error);
+            showErrorToast("Failed to publish draft -- Please try again");
         }
     };
 
@@ -234,7 +279,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                                 text-white bg-orange-400 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-400
                             "
                         >
-                            Install this App on your Device
+                            Install this App on my Device
                         </Button>
 
                         <CustomDialog isOpen={isInstallDialogOpen} onClose={() => setIsInstallDialogOpen(false)}>
@@ -268,6 +313,100 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                     )}
                 </div>
 
+                {/* Latest Updates */}
+                {updates && updates.length > 0 && (
+                    <div className="mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                                <Sparkles size={16} />
+                                Latest Updates
+                            </h3>
+
+                            {updates.length > shownUpdatesCount && (
+                                <Button
+                                    onClick={() => setShowAllUpdates(!showAllUpdates)}
+                                    className="
+                                        text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/70 
+                                        px-2 py-1 rounded-md transition-colors
+                                    "
+                                >
+                                    {showAllUpdates ? "Show Less" : "See All"}
+                                </Button>
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            {displayedUpdates.map((update) => (
+                                <div
+                                    key={update.id}
+                                    onClick={() => {
+                                        if (!update.viewed && onMarkAsViewed) {
+                                            onMarkAsViewed(update.id);
+                                        }
+                                        setSelectedUpdate(update);
+                                    }}
+                                    className={cn(
+                                        "p-4 rounded-md border text-sm transition-colors cursor-pointer",
+                                        update.viewed
+                                            ? "border-blue-800 dark:border-blue-600 bg-neutral-200 dark:bg-neutral-500/50 text-neutral-900 dark:text-neutral-200 hover:bg-neutral-500 dark:hover:bg-neutral-800"
+                                            : "border-blue-600 dark:border-blue-800 bg-blue-200 dark:bg-blue-500/50 text-blue-900 dark:text-blue-200 hover:bg-blue-500 dark:hover:bg-blue-800 shadow-sm"
+                                    )}
+                                >
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs opacity-70">
+                                            {new Date(update.createdAt).toLocaleString()}
+                                        </span>
+
+                                        {!update.published && (
+                                            <button
+                                                onClick={(e) => handlePublishUpdate(e, update.id)}
+                                                className="
+                                                    bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-200 dark:hover:bg-yellow-900/70 
+                                                    text-xs px-2 py-1 rounded font-semibold transition-colors cursor-pointer
+                                                "
+                                            >
+                                                DRAFT
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <p className="whitespace-pre-wrap">
+                                        {renderContentWithLinks(update.content)}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <CustomDialog isOpen={!!selectedUpdate} onClose={() => setSelectedUpdate(null)}>
+                            {selectedUpdate && (
+                                <div className="pl-14 pr-14 pt-4 pb-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-xs opacity-70">
+                                            {new Date(selectedUpdate.createdAt).toLocaleString()}
+                                        </span>
+
+                                        {!selectedUpdate.published && (
+                                            <button
+                                                onClick={(e) => handlePublishUpdate(e, selectedUpdate.id)}
+                                                className="
+                                                    bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-200 dark:hover:bg-yellow-900/70 
+                                                    text-xs px-2 py-1 rounded font-semibold transition-colors cursor-pointer
+                                                "
+                                            >
+                                                DRAFT
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <div className="whitespace-pre-wrap">
+                                        {renderContentWithLinks(selectedUpdate.content)}
+                                    </div>
+                                </div>
+                            )}
+                        </CustomDialog>
+                    </div>
+                )}
+
                 {/* Update Announcement */}
                 {user?.is_superuser && (
                     <div className="mb-6">
@@ -275,14 +414,15 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                             <Megaphone size={16} />
                             New Update
                         </h3>
+
                         <form className="flex flex-col gap-2" onSubmit={handleUpdateSubmit}>
                             <textarea
                                 value={updateContent}
                                 onChange={(e) => setUpdateContent(e.target.value)}
                                 disabled={isSubmittingUpdate}
-                                placeholder="Write about the latest updates & Notify all users..."
+                                placeholder="Write about the latest updates..."
                                 className="
-                                    w-full text-base md:text-sm p-2 rounded-md border 
+                                    w-full text-sm md:text-base p-2 rounded-md border 
                                     border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 
                                     text-neutral-900 dark:text-neutral-100 resize-none outline-none 
                                     focus:ring-2 focus:ring-green-500 transition-shadow disabled:opacity-50
@@ -297,7 +437,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                                     rounded-md shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed
                                 "
                             >
-                                {isSubmittingUpdate ? "Publishing..." : "Publish & Notify"}
+                                {isSubmittingUpdate ? "Saving..." : "Save Draft"}
                             </Button>
                         </form>
                     </div>
@@ -317,7 +457,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                             disabled={isSubmittingFeedback}
                             placeholder="Say what's on your mind..."
                             className="
-                                w-full text-base md:text-sm p-2 rounded-md border 
+                                w-full text-sm md:text-base p-2 rounded-md border 
                                 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 
                                 text-neutral-900 dark:text-neutral-100 resize-none outline-none 
                                 focus:ring-2 focus:ring-blue-500 transition-shadow disabled:opacity-50
@@ -350,7 +490,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                             type="email"
                             placeholder="Your email address"
                             className="
-                                w-full text-base md:text-sm p-2 rounded-md border border-neutral-200 dark:border-neutral-700 
+                                w-full text-sm md:text-base p-2 rounded-md border border-neutral-200 dark:border-neutral-700 
                                 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 
                                 outline-none focus:ring-2 focus:ring-blue-500 transition-shadow
                             "
@@ -412,9 +552,11 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false }: 
                             <PopupLink href="/terms-of-service">
                                 Terms of Service
                             </PopupLink>
+
                             <PopupLink href="/privacy-policy">
                                 Privacy Policy
                             </PopupLink>
+
                             <PopupLink href="/data-deletion">
                                 Data Deletion
                             </PopupLink>

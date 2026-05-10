@@ -43,7 +43,7 @@ export default function Navbar() {
             const diffY = touchStartY - currentY;
 
             // Detect if it's a horizontal swipe
-            if (!isHorizontalSwipe && (Math.abs(diffX) > Math.abs(diffY)) && (Math.abs(diffX) > 10)) {
+            if (!isHorizontalSwipe && (Math.abs(diffX) > Math.abs(diffY)) && (Math.abs(diffX) > 50)) {
                 isHorizontalSwipe = true;
             }
 
@@ -76,7 +76,7 @@ export default function Navbar() {
             }
 
             // Perform navigation if threshold is crossed
-            if (isHorizontalSwipe && Math.abs(diffX) > 50) {
+            if (isHorizontalSwipe && Math.abs(diffX) > 100) {
                 if (isSidebarOpenAtStart) {
                     if (diffX > 0) {
                         // Swiped Left: Close the sidebar

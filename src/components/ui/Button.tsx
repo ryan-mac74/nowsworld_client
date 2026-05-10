@@ -3,7 +3,7 @@ import { cn } from "@/lib/tailwind-merge";
 type ButtonProps = {
   children: React.ReactNode;
   type?: "button" | "submit" | "reset";
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   aria_label?: string;
   className?: string;

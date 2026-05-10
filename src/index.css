@@ -13,7 +13,7 @@
   }
 
   body {
-    @apply m-0 p-0 min-h-screen bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100;
+    @apply m-0 p-0 min-h-screen bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 text-[14px] sm:text-[16px];
   }
 
   h1 {
