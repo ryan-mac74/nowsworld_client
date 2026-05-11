@@ -58,6 +58,7 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false, up
 
     const shownUpdatesCount = 2;
     const displayedUpdates = showAllUpdates ? updates : updates.slice(0, shownUpdatesCount);
+    const unviewedUpdatesCount = updates.filter((update) => !update.viewed).length;
 
     useEffect(() => {
         // Check if push notifications are supported and user is already subscribed
@@ -320,6 +321,15 @@ export default function Sidebar({ isOpen = false, onClose, isOverlay = false, up
                             <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                                 <Sparkles size={16} />
                                 Latest Updates
+
+                                {unviewedUpdatesCount > 0 && (
+                                    <span className="relative flex h-5 w-5 ml-1">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                                        <span className="relative h-5 w-5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">
+                                            {unviewedUpdatesCount}
+                                        </span>
+                                    </span>
+                                )}
                             </h3>
 
                             {updates.length > shownUpdatesCount && (
