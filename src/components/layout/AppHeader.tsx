@@ -31,6 +31,7 @@ export const headerButtonClass = `
 
 export type UserMenuProps = {
     user: UserPublic | null;
+    isAuthLoading: boolean;
     logout: () => void;
     deleteAllAccounts: () => void;
     deleteAccount: () => void;
@@ -40,6 +41,7 @@ export type UserMenuProps = {
 
 export default function AppHeader({
     user,
+    isAuthLoading,
     logout,
     deleteAllAccounts,
     deleteAccount,
@@ -50,7 +52,12 @@ export default function AppHeader({
     const [updates, setUpdates] = useState<Update[]>([]);
 
     useEffect(() => {
-        const fetchUpdates = async () => {
+        // Only fetch updates if user is authenticated and auth state is not loading
+        if (isAuthLoading) {
+            return;
+        }
+
+        async function fetchUpdates() {
             try {
                 const res = await fetch(`${VITE_API_URL}/public/updates`, {
                     credentials: "include",
@@ -63,25 +70,31 @@ export default function AppHeader({
             } catch (error) {
                 console.error("❌ Failed to fetch updates:", error);
             }
-        };
+        }
 
         fetchUpdates();
+        window.addEventListener("refetch-updates", fetchUpdates);
 
+        return () => {
+            // Clean up event listener on unmount
+            window.removeEventListener("refetch-updates", fetchUpdates);
+        };
+    }, [user, isAuthLoading]);
+
+    useEffect(() => {
         const handleOpenSidebar = () => setIsSidebarOpen(true);
         const handleCloseSidebar = () => setIsSidebarOpen(false);
 
         // Listen for custom events from anywhere in the app
         window.addEventListener("open-sidebar", handleOpenSidebar);
         window.addEventListener("close-sidebar", handleCloseSidebar);
-        window.addEventListener("refetch-updates", fetchUpdates);
 
         return () => {
             // Clean up event listeners on unmount
             window.removeEventListener("open-sidebar", handleOpenSidebar);
             window.removeEventListener("close-sidebar", handleCloseSidebar);
-            window.removeEventListener("refetch-updates", fetchUpdates);
         };
-    }, [user]);
+    }, []);
 
     const handleMarkAsViewed = async (id: number) => {
         try {

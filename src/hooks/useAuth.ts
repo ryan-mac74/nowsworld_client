@@ -46,7 +46,7 @@ export default function useAuth() {
     const handleLogout = () => setUser(null);
     window.addEventListener("auth-logout", handleLogout);
 
-    // Cleanup event listener on unmount
+    // Clean up event listener on unmount
     return () => window.removeEventListener("auth-logout", handleLogout);
   }, [fetchMe]);
 

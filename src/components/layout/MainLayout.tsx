@@ -4,12 +4,13 @@ import Navbar from "@/components/navigation/Navbar";
 import useAuth from "@/hooks/useAuth";
 
 export default function MainLayout() {
-    const { user, logout, deleteAllAccounts, deleteAccount, deactivateAccount, activateAccount } = useAuth();
+    const { user, isLoading: isAuthLoading, logout, deleteAllAccounts, deleteAccount, deactivateAccount, activateAccount } = useAuth();
 
     return (
         <div className="min-h-screen flex flex-col items-center pb-14 bg-white dark:bg-neutral-900">
             <AppHeader
                 user={user}
+                isAuthLoading={isAuthLoading}
                 logout={async () => await logout()}
                 deleteAllAccounts={async () => {
                     await deleteAllAccounts();
