@@ -15,7 +15,7 @@ const VITE_API_URL =
     "http://localhost:3000/api";
 
 const menuItemClass = `
-    w-full h-8 flex items-center justify-center
+    w-full h-8 flex items-center 
     bg-neutral-100 dark:bg-neutral-800
     hover:bg-neutral-200 dark:hover:bg-neutral-700
     gap-2 cursor-pointer

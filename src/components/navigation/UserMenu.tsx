@@ -8,6 +8,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
+    DropdownMenuLabel,
 } from "@/components/navigation/DropdownMenu";
 import Button from "@/components/ui/Button";
 import Avatar from "@/components/ui/Avatar";
@@ -61,6 +62,21 @@ export default function UserMenu({
                     flex gap-1 flex-col
                 "
             >
+                <DropdownMenuLabel className="flex items-center gap-2 p-2">
+                    <Avatar name={user.name} avatar={user.avatar} />
+
+                    <div className="flex flex-col">
+                        <span className="font-bold text-base">
+                            {user.name}
+                        </span>
+                        <span className="text-sm font-normal text-neutral-600 dark:text-neutral-400">
+                            @{user.username}
+                        </span>
+                    </div>
+                </DropdownMenuLabel>
+
+                <DropdownMenuSeparator />
+
                 {menuItems.map((item) => {
                     const Icon = item.icon;
 
