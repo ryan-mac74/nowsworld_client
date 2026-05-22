@@ -18,35 +18,53 @@ The goal is to make something different from existing platforms.
 
 ## 🪄 Getting Started
 
-1. Clone the repository:
+1. Clone repository:
+
 ```bash
 git clone https://github.com/ryan-mac74/nowsworld-client.git
 ```
 
-2. Install dependencies:
+2. Set up environment variables:
+
 ```bash
 cd nowsworld-client
+cp env.example .env
+```
+
+3. Install dependencies:
+
+```bash
 npm install
 ```
 
 ### For Development
 
-3. Start the dev server:
+4. Start dev server:
+
 ```bash
 npm run dev
 ```
 
 ### For Production
 
-3. Build static files:
+4. Build static files:
+
 ```bash
 npm run build
 ```
 
-4. Serve the built files:
+5. Serve built files:
+
 ```bash
 npm run start
 ```
+
+## ❤️ Acknowledgement
+
+This project is based on and inspired by the following open-source repository:
+
+- **[full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template)**
+  by _[Sebastián Ramírez](https://github.com/tiangolo)_
 
 ## 📝 License
 

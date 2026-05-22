@@ -1,84 +1,206 @@
-import { useState, useEffect, useRef } from "react";
-import StatusDialog from "@/ui/StatusDialog";
-
-type Post = {
-  id: number;
-  content: string;
-  published: boolean;
-  createdAt: string;
-  _count: {
-    likes: number;
-    comments: number;
-  };
-};
-
-type User = {
-  id: number;
-  email: string;
-  username: string;
-  name: string;
-  bio: string | null;
-  posts: Post[];
-};
+import WorkInProgress from "@/components/ui/WorkInProgress";
 
 export default function Home() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const loaderRef = useRef<HTMLDivElement | null>(null);
-  
-  const limitUser = 10;
-  const limitPost = 5;
+  return (
+    <main className="w-full max-w-2xl flex-1 flex flex-col items-center justify-center">
+      <WorkInProgress />
+    </main>
+  );
+}
 
-  // Fetch users for a page
+/*
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import NewsFeedSkeleton from "@/components/skeleton/NewsFeedSkeleton";
+import NewsFeed from "@/components/layout/NewsFeed";
+import type { User } from "@/components/layout/NewsFeed";
+import Button from "@/components/ui/Button";
+import useAuth from "@/hooks/useAuth";
+
+// Module-level cache to preserve state across tab navigation
+let cachedUsers: User[] = [];
+let cachedPage = 1;
+let cachedFetchedPage = 0;
+let cachedHasMore = true;
+let cachedScrollPosition = 0;
+
+export default function Home() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const [users, setUsers] = useState<User[]>(cachedUsers);
+  const [loading, setLoading] = useState(cachedUsers.length === 0);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(cachedPage);
+  const [hasMore, setHasMore] = useState(cachedHasMore);
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [prevAuth, setPrevAuth] = useState<boolean | null>(null);
+  const [retryCounter, setRetryCounter] = useState(0);
+
+  // Disable browser's default scroll restoration to manage it manually
   useEffect(() => {
-    if (!hasMore) {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+  }, []);
+
+  const VITE_API_URL =
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:3000/api";
+
+  const userLimit = Number(import.meta.env.VITE_USER_LIMIT) || 5;
+  const postLimit = Number(import.meta.env.VITE_POST_LIMIT) || 10;
+
+  const fetchFeedRequest = async (pageToFetch: number) => {
+    const endpoint = isAuthenticated ? "/private/feed" : "/public/feed";
+
+    const res = await fetch(
+      `${VITE_API_URL}${endpoint}?page=${pageToFetch}&userLimit=${userLimit}&postLimit=${postLimit}`,
+      {
+        credentials: "include",
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`❌ HTTP ${res.status}`);
+    }
+
+    return res.json() as Promise<User[]>;
+  };
+
+  const refetchFeed = useCallback(() => {
+    cachedUsers = [];
+    cachedPage = 1;
+    cachedFetchedPage = 0;
+    cachedHasMore = true;
+    cachedScrollPosition = 0;
+
+    setUsers([]);
+    setError(null);
+    setPage(1);
+    setHasMore(true);
+    setLoading(true);
+    setRetryCounter((prev) => prev + 1); // to trigger useEffect when "refetch-feed" event occurs
+  }, []);
+
+  // Reset feed when user logs in or out
+  if (!isAuthLoading) {
+    if (prevAuth === null) {
+      setPrevAuth(isAuthenticated);
+    } else if (prevAuth !== isAuthenticated) {
+      setPrevAuth(isAuthenticated);
+      refetchFeed();
+    }
+  }
+
+  // Sync state to module-level cache
+  useEffect(() => {
+    cachedUsers = users;
+    cachedPage = page;
+    cachedHasMore = hasMore;
+  }, [users, page, hasMore]);
+
+  // Restore scroll position when users are loaded
+  useEffect(() => {
+    if (users.length === 0 || cachedScrollPosition === 0) {
       return;
     }
 
-    // Prevent state updates on unmounted component
-    // by React Strict Mode
-    let ignore = false;
+    // Double requestAnimationFrame ensures the browser has fully painted the DOM
+    // and React Router has finished its navigation scroll resets
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // Scroll to the cached scroll position without smooth behavior 
+        // to avoid conflicts with React Router's scroll handling
+        window.scrollTo({ top: cachedScrollPosition, behavior: "auto" });
+      });
+    });
+  }, [users, location.key]); // "location.key" changes on every navigation => scroll restoration
 
-    const fetchUsers = async () => {
+  // Track scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      // Save current scroll position to cache on scroll
+      cachedScrollPosition = window.scrollY;
+    };
+
+    // "passive" => browser can keep scrolling without waiting for the event handler
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Cleanup event listener on unmount
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Fetch users for a page
+  useEffect(() => {
+    // Wait for auth to resolve to prevent wrong endpoint requests
+    if (isAuthLoading) {
+      return;
+    }
+
+    // Prevent refetching for already fetched pages
+    if (page <= cachedFetchedPage) {
+      return;
+    }
+
+    let ignore = false; // to prevent state updates on unmounted component (React Strict Mode)
+
+    const fetchFeed = async () => {
       setLoading(true);
-      try {
-        const res = await fetch(`/api/users?page=${page}&limitUser=${limitUser}&limitPost=${limitPost}`);
-        if (!res.ok) {
-          throw new Error(`❌ HTTP ${res.status}`);
-        }
+      setError(null);
 
-        const data: User[] = await res.json();
+      try {
+        const data = await fetchFeedRequest(page);
 
         if (!ignore) {
-          // Append new users to the list
-          setUsers(prev => [...prev, ...data]);
+          if (page === 1) {
+            setUsers(data);
+            setHasMore(true);
+          } else {
+            // Only add new users not in the list yet
+            setUsers((prev) => {
+              const newUsers = data.filter(
+                (newUser) => !prev.some((existing) => existing.id === newUser.id)
+              );
 
-          if (data.length < limitUser) {
+              return [...prev, ...newUsers];
+            });
+          }
+
+          if (data.length < userLimit) {
             // No more users to load
             setHasMore(false);
           }
+
+          // Mark the page as fetched
+          cachedFetchedPage = page;
+
+          setLoading(false);
         }
-      } catch (err) {
+      } catch (error) {
         if (!ignore) {
-          console.error(err);
-          setError("❌ Failed to load users");
-        }
-      } finally {
-        if (!ignore) {
+          console.error(error);
+
+          setError(
+            (page === 1) ? (
+              "❌ Failed to refresh users"
+            ) : (
+              "❌ Failed to load users"
+            )
+          );
+
           setLoading(false);
         }
       }
     };
 
-    fetchUsers();
+    fetchFeed();
 
     return () => {
       ignore = true;
     };
-  }, [page]);
+  }, [page, isAuthenticated, isAuthLoading, retryCounter]);
 
   // Infinite scroll observer
   useEffect(() => {
@@ -91,111 +213,137 @@ export default function Home() {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !loading) {
-          setPage(page => page + 1);
+          setLoading(true);
+          setPage((prev) => prev + 1);
         }
       },
       // Trigger callback before visibility
-      { rootMargin: "200px" }
+      { rootMargin: "250px" }
     );
 
     // Start observing the loader element
     observer.observe(loaderRef.current);
-    
+
     return () => observer.disconnect();
-  }, [loaderRef, hasMore, loading]);
+  }, [hasMore, loading]);
 
-  if (loading && page === 1) {
-    return (
-      <StatusDialog
-        type="loading"
-        title="Loading users..."
-        message="Please, wait a moment"
-      />
-    );
-  }
+  // Listen for manual refetch triggers
+  useEffect(() => {
+    const handleRefetch = () => refetchFeed();
+    window.addEventListener("refetch-feed", handleRefetch);
 
-  if (error) {
-    return (
-      <StatusDialog
-        type="error"
-        title="Error loading users"
-        message={error}
-        onRetry={() => window.location.reload()}
-      />
-    );
-  }
+    // Cleanup event listener on unmount
+    return () => window.removeEventListener("refetch-feed", handleRefetch);
+  }, [refetchFeed]);
+
+  // Handle incoming navigation state
+  useEffect(() => {
+    if (location.state?.fromNav) {
+      // Scroll back to top of the page
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      // Trigger global "refetch-feed" event
+      window.dispatchEvent(new Event("refetch-feed"));
+
+      // Replace the current history entry to prevent going back to the same state
+      // & Clear the state so it doesn't re-trigger on a browser refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   return (
-    <div className="min-h-screen p-8 flex flex-col items-center gap-8">
-      {users.map((user) => (
-        <div
-          key={user.id}
-          className="w-full max-w-2xl border border-neutral-700 rounded-lg p-6 shadow-md bg-neutral-800"
-        >
-          {/* User Info */}
-          <h2 className="text-2xl font-bold text-neutral-100 flex items-center justify-center gap-2 text-center">
-            <span>{user.name}</span>
-            <span className="text-neutral-300 text-lg font-normal">
-              @{user.username}
-            </span>
-          </h2>
-          <p className="text-neutral-250 text-m">{user.email}</p>
-          {user.bio && (
-            <p className="text-neutral-200 mt-2 italic">{user.bio}</p>
-          )}
+    <main className="w-full flex-1 flex flex-col items-center gap-4 pt-2 pb-2">
+      {(page === 1) ? (
+        error ? (
+          <div
+            className="
+              w-full max-w-2xl flex flex-col items-center text-center 
+              mt-4 p-4 rounded-lg border border-red-200 dark:border-red-800 
+              bg-red-50 dark:bg-red-800/20 shadow-sm
+            "
+          >
+            <div className="text-2xl mb-2">⚠️</div>
 
-          {/* User Posts */}
-          <div className="mt-6">
-            {user.posts.length === 0 ? (
-              <p className="text-neutral-400">No posts yet</p>
-            ) : (
-              <ul className="space-y-4">
-                {user.posts.map((post) => (
-                  <li
-                    key={post.id}
-                    className="border border-neutral-700 rounded p-4 bg-neutral-900"
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-neutral-500">
-                        {new Date(post.createdAt).toLocaleString()}
-                      </span>
+            <h2 className="text-lg font-semibold text-red-700 dark:text-red-300">
+              Something went wrong
+            </h2>
 
-                      {!post.published && (
-                        <span className="text-xs text-orange-200 bg-orange-800/30 px-2 py-0.5 rounded">
-                          Draft
-                        </span>
-                      )}
-                    </div>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
 
-                    <p className="text-neutral-200 mt-2">
-                      {post.content}
-                    </p>
-
-                    {/*
-                    
-                    <div className="flex gap-4 mt-3 text-sm text-neutral-400">
-                      <span>❤️ {post._count.likes}</span>
-                      <span>💬 {post._count.comments}</span>
-                    </div>
-                    
-                    */}
-                  </li>
-                ))}
-              </ul>
-            )}
+            <Button
+              onClick={refetchFeed}
+              className="
+                bg-red-600 hover:bg-red-700 text-white 
+                mt-2 active:scale-95
+              "
+            >
+              Try again
+            </Button>
           </div>
-        </div>
-      ))}
+        ) : loading ? (
+          [...Array(2)].map((_, i) => <NewsFeedSkeleton key={i} />)
+        ) : (
+          <NewsFeed users={users} />
+        )
+      ) : (
+        <>
+          <NewsFeed users={users} />
 
-      {hasMore && (
-        <div ref={loaderRef} className="h-8 w-full flex justify-center items-center">
-          <span className="text-neutral-400">Loading more users...</span>
+          {loading ? (
+            [...Array(1)].map((_, i) => <NewsFeedSkeleton key={i} />)
+          ) : (
+            error && (
+              <div className="w-full max-w-2xl flex flex-col items-center">
+                <p className="mt-2 text-sm text-red-500">
+                  {error}
+                </p>
+
+                <Button
+                  onClick={() => {
+                    setError(null);
+                    setRetryCounter((prev) => prev + 1);
+                  }}
+                  className="
+                    bg-blue-500 hover:bg-blue-700 text-white 
+                    mt-2 active:scale-95
+                  "
+                >
+                  Load more
+                </Button>
+              </div>
+            )
+          )}
+        </>
+      )}
+
+      {!error && hasMore && (
+        <div
+          ref={loaderRef} // to observe when into the viewport for infinite scroll
+          className="h-4 w-full flex justify-center items-center"
+        >
+          {!loading && (
+            <span className="text-neutral-500 dark:text-neutral-400">
+              Scroll to load more
+            </span>
+          )}
         </div>
       )}
 
-      {!hasMore && users.length > 0 && (
-        <p className="text-neutral-400 text-center mt-4">No more users to load</p>
+      {!error && loading && page > 1 && (
+        <p className="text-neutral-500 dark:text-neutral-400 text-center m-2">
+          Loading more users...
+        </p>
       )}
-    </div>
+
+      {!error && !hasMore && users.length > 0 && (
+        <p className="text-neutral-500 dark:text-neutral-400 text-center m-2">
+          No more users to load
+        </p>
+      )}
+    </main>
   );
 }
+
+*/
