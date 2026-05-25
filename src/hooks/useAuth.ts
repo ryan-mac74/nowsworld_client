@@ -1,3 +1,5 @@
+// source: https://github.com/fastapi/full-stack-fastapi-template/blob/master/frontend/src/hooks/useAuth.ts
+
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useCustomToast from "@/hooks/useCustomToast";

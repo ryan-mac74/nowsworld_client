@@ -1,3 +1,5 @@
+// source: https://github.com/fastapi/full-stack-fastapi-template/blob/master/frontend/src/hooks/useCustomToast.ts
+
 import { toast } from "sonner";
 
 const useCustomToast = () => {

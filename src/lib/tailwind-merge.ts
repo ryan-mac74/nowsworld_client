@@ -1,3 +1,5 @@
+// source: https://github.com/fastapi/full-stack-fastapi-template/blob/master/frontend/src/lib/utils.ts
+
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
