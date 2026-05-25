@@ -1,3 +1,5 @@
+// source: https://github.com/fastapi/full-stack-fastapi-template/blob/master/frontend/src/hooks/useMobile.ts
+
 import * as React from "react"
 
 const MOBILE_BREAKPOINT = 768

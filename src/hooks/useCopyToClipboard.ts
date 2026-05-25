@@ -1,4 +1,6 @@
 // source: https://usehooks-ts.com/react-hook/use-copy-to-clipboard
+// source: https://github.com/fastapi/full-stack-fastapi-template/blob/master/frontend/src/hooks/useCopyToClipboard.ts
+
 import { useCallback, useState } from "react"
 
 type CopiedValue = string | null
