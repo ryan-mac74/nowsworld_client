@@ -189,9 +189,16 @@ export default function useAuth() {
 
   const oauthConsent = async () => {
     try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+
       const res = await fetch(`${VITE_API_URL}/auth/consent`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         credentials: "include",
+        body: JSON.stringify({ token }),
       });
 
       if (!res.ok) {
