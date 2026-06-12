@@ -78,7 +78,7 @@ export default defineConfig(({ mode }) => {
         "/api": {
           target: env.APP_URL || "http://localhost:3000",
           changeOrigin: true,
-          secure: false,
+          secure: env.APP_URL ? env.APP_URL.startsWith("https://") : false, // true if targeting "https"
         },
       },
     },
