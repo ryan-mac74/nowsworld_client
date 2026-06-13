@@ -17,6 +17,18 @@ export default function OAuthHandler() {
     const { oauthConsent } = useAuth();
 
     const handled = useRef(false);
+    const token = searchParams.get("token");
+
+    useEffect(() => {
+        const token = searchParams.get("token");
+
+        if (token) {
+            localStorage.setItem("token", token);
+
+            // Clean up URL without reloading the page
+            window.history.replaceState({}, document.title, "/");
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         // Prevent handling multiple times
@@ -68,7 +80,7 @@ export default function OAuthHandler() {
         setIsLoading(true);
 
         try {
-            await oauthConsent();
+            await oauthConsent(token);
             setIsConsentOpen(false);
         } catch (error) {
             console.error("❌ Failed to create account:", error);

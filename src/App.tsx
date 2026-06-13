@@ -16,6 +16,7 @@ import usePWA from "@/hooks/usePWA";
 
 export default function App() {
   usePWA();
+
   return (
     <>
       <Toaster richColors position="top-right" />

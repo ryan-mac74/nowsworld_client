@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { authMode, authFetch } from "@/utils/auth";
 import useCustomToast from "@/hooks/useCustomToast";
 import type { UserPublic } from "@/types/user";
 
@@ -22,9 +23,7 @@ export default function useAuth() {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${VITE_API_URL}/auth/me`, {
-        credentials: "include",
-      });
+      const res = await authFetch(`${VITE_API_URL}/auth/me`);
 
       if (!res.ok) {
         setUser(null);
@@ -32,6 +31,11 @@ export default function useAuth() {
       }
 
       const data = await res.json();
+
+      if (data.token && (authMode === "bearer")) {
+        localStorage.setItem("token", data.token);
+      }
+
       setUser(data.user ?? null);
     } catch (error: unknown) {
       console.error(error);
@@ -54,9 +58,8 @@ export default function useAuth() {
 
   const logout = async (toast: boolean = true) => {
     try {
-      const res = await fetch(`${VITE_API_URL}/auth/logout`, {
+      const res = await authFetch(`${VITE_API_URL}/auth/logout`, {
         method: "POST",
-        credentials: "include",
       });
 
       if (!res.ok) {
@@ -85,9 +88,8 @@ export default function useAuth() {
     }
 
     try {
-      const res = await fetch(`${VITE_API_URL}/auth/delete-all`, {
+      const res = await authFetch(`${VITE_API_URL}/auth/delete-all`, {
         method: "POST",
-        credentials: "include",
       });
 
       if (!res.ok) {
@@ -107,9 +109,8 @@ export default function useAuth() {
     }
 
     try {
-      const res = await fetch(`${VITE_API_URL}/auth/delete`, {
+      const res = await authFetch(`${VITE_API_URL}/auth/delete`, {
         method: "POST",
-        credentials: "include",
       });
 
       if (!res.ok) {
@@ -136,9 +137,8 @@ export default function useAuth() {
     }
 
     try {
-      const res = await fetch(`${VITE_API_URL}/auth/deactivate`, {
+      const res = await authFetch(`${VITE_API_URL}/auth/deactivate`, {
         method: "POST",
-        credentials: "include",
       });
 
       if (!res.ok) {
@@ -164,9 +164,8 @@ export default function useAuth() {
     }
 
     try {
-      const res = await fetch(`${VITE_API_URL}/auth/activate`, {
+      const res = await authFetch(`${VITE_API_URL}/auth/activate`, {
         method: "POST",
-        credentials: "include",
       });
 
       if (!res.ok) {
@@ -187,17 +186,13 @@ export default function useAuth() {
     }
   };
 
-  const oauthConsent = async () => {
+  const oauthConsent = async (token: string | null) => {
     try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get("token");
-
-      const res = await fetch(`${VITE_API_URL}/auth/consent`, {
+      const res = await authFetch(`${VITE_API_URL}/auth/consent`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
         body: JSON.stringify({ token }),
       });
 
