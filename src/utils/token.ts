@@ -1,4 +1,4 @@
-export const TOKEN_KEY = "token";
+const TOKEN_KEY = import.meta.env.TOKEN_KEY ?? "token";
 
 export function setToken(token: string) {
     localStorage.setItem(TOKEN_KEY, token);

@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { authMode, authFetch } from "@/utils/auth";
+import { authFetch } from "@/utils/auth";
+import { clearToken } from "@/utils/token";
 import useCustomToast from "@/hooks/useCustomToast";
 import type { UserPublic } from "@/types/user";
 
@@ -31,11 +32,6 @@ export default function useAuth() {
       }
 
       const data = await res.json();
-
-      if (data.token && (authMode === "bearer")) {
-        localStorage.setItem("token", data.token);
-      }
-
       setUser(data.user ?? null);
     } catch (error: unknown) {
       console.error(error);
@@ -66,6 +62,7 @@ export default function useAuth() {
         throw new Error("❌ Failed to log out");
       }
 
+      clearToken();
       setUser(null);
 
       // Notify all instances of this hook to update their state

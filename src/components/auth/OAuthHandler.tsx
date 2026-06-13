@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import useCustomToast from "@/hooks/useCustomToast";
 import ConsentDialog from "@/components/dialogs/ConsentDialog";
+import { setToken } from "@/utils/token";
 import useAuth from "@/hooks/useAuth";
 
 export default function OAuthHandler() {
@@ -23,7 +24,7 @@ export default function OAuthHandler() {
         const token = searchParams.get("token");
 
         if (token) {
-            localStorage.setItem("token", token);
+            setToken(token);
 
             // Clean up URL without reloading the page
             window.history.replaceState({}, document.title, "/");
