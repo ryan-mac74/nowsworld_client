@@ -1,8 +1,8 @@
 import { getToken } from "@/utils/token";
 
-const NODE_ENV = import.meta.env.NODE_ENV ?? "development";
+const MODE = import.meta.env.MODE;
 
-export const isProd = ["production", "staging"].includes(NODE_ENV);
+export const isProd = ["production", "staging"].includes(MODE);
 export const authMode = isProd ? "cookie" : "bearer";
 
 export function authFetch(
