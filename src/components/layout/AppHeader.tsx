@@ -9,6 +9,7 @@ import type { UserPublic } from "@/types/user";
 import { Menu } from "lucide-react";
 import Sidebar from "@/components/navigation/Sidebar";
 import type { Update } from "@/components/navigation/Sidebar";
+import useLanguage from "@/hooks/useLanguage";
 
 const VITE_API_URL =
     import.meta.env.VITE_API_URL ||
@@ -50,6 +51,7 @@ export default function AppHeader({
 }: UserMenuProps) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [updates, setUpdates] = useState<Update[]>([]);
+    const { language, toggleLanguage } = useLanguage();
 
     useEffect(() => {
         // Only fetch updates if user is authenticated and auth state is not loading
@@ -73,6 +75,8 @@ export default function AppHeader({
         }
 
         fetchUpdates();
+
+        // Listen for custom event to refetch updates
         window.addEventListener("refetch-updates", fetchUpdates);
 
         return () => {
@@ -85,7 +89,7 @@ export default function AppHeader({
         const handleOpenSidebar = () => setIsSidebarOpen(true);
         const handleCloseSidebar = () => setIsSidebarOpen(false);
 
-        // Listen for custom events from anywhere in the app
+        // Listen for custom events to open/close sidebar
         window.addEventListener("open-sidebar", handleOpenSidebar);
         window.addEventListener("close-sidebar", handleCloseSidebar);
 
@@ -144,10 +148,13 @@ export default function AppHeader({
                         )}
                     </Button>
 
-                    <Button disabled className={`${headerButtonClass} uppercase`} aria-label="Change Language">
-                        <span>FR</span>
-
-                        {/* TODO: EN Language Toggle */}
+                    <Button
+                        className={`${headerButtonClass} uppercase`}
+                        aria-label="Change Language"
+                        onClick={toggleLanguage}
+                        disabled
+                    >
+                        <span>{language}</span>
                     </Button>
                 </div>
 

@@ -97,6 +97,7 @@ export default function Navbar() {
         window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
         return () => {
+            // Clean up event listeners on unmount
             window.removeEventListener("touchstart", handleTouchStart);
             window.removeEventListener("touchmove", handleTouchMove);
             window.removeEventListener("touchend", handleTouchEnd);

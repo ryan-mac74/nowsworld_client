@@ -85,11 +85,13 @@ export default function usePullToRefresh() {
             }, 200);
         };
 
+        // Attach global listeners for full-screen swipe support
         window.addEventListener("touchstart", handleTouchStart, { passive: true });
         window.addEventListener("touchmove", handleTouchMove, { passive: true });
         window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
         return () => {
+            // Clean up event listeners on unmount
             window.removeEventListener("touchstart", handleTouchStart);
             window.removeEventListener("touchmove", handleTouchMove);
             window.removeEventListener("touchend", handleTouchEnd);
