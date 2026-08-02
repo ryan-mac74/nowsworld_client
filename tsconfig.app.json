@@ -33,7 +33,10 @@
     "paths": {
       "@/*": [
         "src/*"
-      ]
+      ],
+      "nowsspace": [
+        "./node_modules/nowsspace/index.ts"
+      ],
     }
   },
   "include": [
