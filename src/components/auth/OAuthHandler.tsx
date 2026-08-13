@@ -8,42 +8,39 @@ import useAuth from "@/hooks/useAuth";
 export default function OAuthHandler() {
     const [searchParams, setSearchParams] = useSearchParams();
     const auth = searchParams.get("auth");
+    const token = searchParams.get("token");
 
     const [isLoading, setIsLoading] = useState(false);
-    const [isConsentOpen, setIsConsentOpen] = useState(
-        auth === "consent"
-    );
+    const [isConsentOpen, setIsConsentOpen] = useState(false);
+    const [pendingConsentToken, setPendingConsentToken] = useState<string | null>(null);
 
     const { showSuccessToast, showErrorToast } = useCustomToast();
     const { oauthConsent } = useAuth();
 
     const handled = useRef(false);
-    const token = searchParams.get("token");
 
     useEffect(() => {
-        const token = searchParams.get("token");
-
-        if (token) {
-            setToken(token);
-
-            // Clean up URL without reloading the page
-            window.history.replaceState({}, document.title, "/");
-        }
-    }, [searchParams]);
-
-    useEffect(() => {
-        // Prevent handling multiple times
-        // if component re-renders with the same query params
-        if (handled.current) {
-            return;
-        }
-
-        // No auth query param => do nothing
-        if (!auth) {
+        // Prevent handling multiple times across re-renders
+        if (handled.current || !auth) {
             return;
         }
 
         handled.current = true;
+
+        if (auth === "consent") {
+            if (token) {
+                // Save temporary token in state before clearing searchParams
+                setPendingConsentToken(token);
+                setIsConsentOpen(true);
+            } else {
+                showErrorToast("Invalid/Missing consent token");
+            }
+        } else {
+            if (token) {
+                // Save session token if available
+                setToken(token);
+            }
+        }
 
         if (auth === "error") {
             showErrorToast("Authentication failed");
@@ -73,15 +70,20 @@ export default function OAuthHandler() {
             showErrorToast("You can't link accounts from the same provider");
         }
 
-        // Remove query params after reading
-        setSearchParams(new URLSearchParams());
-    }, [searchParams, setSearchParams, showSuccessToast, showErrorToast]);
+        // Clean up query params from URL without reloading the page
+        setSearchParams(new URLSearchParams(), { replace: true });
+    }, [auth, token, setSearchParams, showSuccessToast, showErrorToast]);
 
     const handleOAuthConsent = async () => {
+        if (!pendingConsentToken) {
+            showErrorToast("Missing consent token");
+            return;
+        }
+
         setIsLoading(true);
 
         try {
-            await oauthConsent(token);
+            await oauthConsent(pendingConsentToken);
             setIsConsentOpen(false);
         } catch (error) {
             console.error("❌ Failed to create account:", error);

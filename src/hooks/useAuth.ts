@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { authFetch } from "@/utils/auth";
-import { clearToken } from "@/utils/token";
+import { setToken, clearToken } from "@/utils/token";
 import useCustomToast from "@/hooks/useCustomToast";
 import type { UserPublic } from "@/types/user";
 
@@ -184,6 +184,11 @@ export default function useAuth() {
   };
 
   const oauthConsent = async (token: string | null) => {
+    if (!token) {
+      showErrorToast("Invalid/Missing consent token");
+      return;
+    }
+
     try {
       const res = await authFetch(`${VITE_API_URL}/auth/consent`, {
         method: "POST",
@@ -197,6 +202,14 @@ export default function useAuth() {
         throw new Error("❌ Failed to create account");
       }
 
+      const data = await res.json().catch(() => ({}));
+
+      if (data.token) {
+        // Save newly issued JWT token
+        setToken(data.token);
+      }
+
+      // Redirect user to homepage
       window.location.href = "/?auth=signup-success";
     } catch (error: unknown) {
       console.error(error);
