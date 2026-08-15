@@ -110,6 +110,6 @@ export default function LoginDialog({ className }: LoginDialogProps) {
           </div>
         </Dialog.Content>
       </Dialog.Portal>
-    </Dialog.Root >
+    </Dialog.Root>
   );
 }

@@ -24,7 +24,7 @@ export default function ConsentDialog({ isLoading, isOpen, setOpen, onConfirm }:
           "
         >
           <Dialog.Close asChild>
-            <Button disabled={isLoading} className="absolute left-2 top-2 text-muted-foreground hover:text-foreground">
+            <Button className="absolute left-2 top-2 text-muted-foreground hover:text-foreground">
               <X className="text-neutral-800 dark:text-neutral-200 size-4" />
             </Button>
           </Dialog.Close>
