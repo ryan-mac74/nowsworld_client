@@ -33,10 +33,6 @@
     "paths": {
       "@/*": [
         "src/*"
-      ],
-      "nowsspace": [
-        "../../nowsspace/ui/index.ts",
-        "../../nowsspace_stg/ui/index.ts",
       ]
     }
   },
