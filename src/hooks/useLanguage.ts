@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 export const LANGUAGES = ["EN", "FR"] as const;
 export type Language = typeof LANGUAGES[number];
 
-const STORAGE_KEY = "app-language";
+const STORAGE_KEY = "nsw-language";
 const DEFAULT_LANGUAGE: Language = "EN";
 
 const getStoredLanguage = (): Language => {

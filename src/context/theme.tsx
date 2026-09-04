@@ -11,9 +11,9 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem("theme") as Theme | null;
+    const saved = localStorage.getItem("nsw-theme") as Theme | null;
     if (saved) {
-        return saved;
+      return saved;
     }
 
     // System preference fallback
@@ -31,7 +31,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
       root.classList.remove("dark");
     }
 
-    localStorage.setItem("theme", theme);
+    localStorage.setItem("nsw-theme", theme);
   }, [theme]);
 
   return (
