@@ -17,7 +17,7 @@ export default function MainLayout() {
 
     return (
         <div className="min-h-screen flex flex-col items-center pb-14 bg-white dark:bg-neutral-900">
-            <AppOverlay SDK_URL={SDK_URL} WS_URL= {WS_URL} user={user} />
+            <AppOverlay SDK_URL={SDK_URL} WS_URL={WS_URL} user={user} />
             <AppHeader
                 user={user}
                 isAuthLoading={isAuthLoading}
