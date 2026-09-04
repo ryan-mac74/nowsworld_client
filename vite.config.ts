@@ -5,7 +5,17 @@ import path from "path";
 
 export default defineConfig(({ mode }) => {
   // Load env variables from the root directory
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, process.cwd(), "");
+
+  // Detect production environment
+  const isProd =
+    mode === "production" ||
+    env.NODE_ENV === "production";
+
+  // Resolve dependency path
+  const dependencyPath = isProd
+    ? path.resolve(__dirname, "../../nowsspace/ui")
+    : path.resolve(__dirname, "../../nowsspace_stg/ui");
 
   return {
     plugins: [
@@ -86,6 +96,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
+        "nowsspace": dependencyPath,
       },
     },
 
