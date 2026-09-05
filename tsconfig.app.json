@@ -34,7 +34,10 @@
     "paths": {
       "@/*": [
         "src/*"
-      ]
+      ],
+      "nowsspace": [
+        "src/components/fallback/nowsspace.tsx"
+      ],
     }
   },
   "include": [
