@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import fs from "fs";
 
 export default defineConfig(({ mode }) => {
   // Load env variables from the root directory
@@ -13,9 +14,17 @@ export default defineConfig(({ mode }) => {
     env.NODE_ENV === "production";
 
   // Resolve dependency path
-  const dependencyPath = isProd
+  const targetDependencyPath = isProd
     ? path.resolve(__dirname, "../../nowsspace/ui")
     : path.resolve(__dirname, "../../nowsspace_stg/ui");
+
+  // Fallback path if nowsspace doesn't exist on disk
+  const fallbackPath = path.resolve(__dirname, "./src/components/fallback/nowsspace.tsx");
+
+  // Check if dependency path exists, else use fallback path
+  const dependencyPath = fs.existsSync(targetDependencyPath)
+    ? targetDependencyPath
+    : fallbackPath;
 
   return {
     plugins: [
