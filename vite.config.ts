@@ -81,7 +81,7 @@ export default defineConfig(({ mode }) => {
       allowedHosts:
         mode === "development"
           ? true
-          : (env.VITE_ALLOWED_HOSTS || "http://localhost:5173")
+          : (env.ALLOWED_HOSTS || "http://localhost:5173")
             .split(",").map(host => host.trim()),
 
       proxy: {
